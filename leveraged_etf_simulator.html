@@ -648,16 +648,19 @@ UNDERLYINGS.forEach(u => {
   ETFs.push({
     id: u.id + '_2x', name: u.name + ' 2x', fullName: u.name + '杠杆2倍',
     underlyingId: u.id, leverage: 2, isUnderlying: false,
+    basePrice: u.basePrice,
     priceHistory: [], currentPrice: u.basePrice, openPrice: u.basePrice
   });
   ETFs.push({
     id: u.id + '_3x', name: u.name + ' 3x', fullName: u.name + '杠杆3倍',
     underlyingId: u.id, leverage: 3, isUnderlying: false,
+    basePrice: u.basePrice,
     priceHistory: [], currentPrice: u.basePrice, openPrice: u.basePrice
   });
   ETFs.push({
     id: u.id + '_1x', name: u.name, fullName: u.name + '(标的)',
     underlyingId: u.id, leverage: 1, isUnderlying: true,
+    basePrice: u.basePrice,
     priceHistory: [], currentPrice: u.basePrice, openPrice: u.basePrice
   });
 });
