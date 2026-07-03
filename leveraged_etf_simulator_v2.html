@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>杠杆ETF & 配资交易 模拟平台</title>
+<title>杠杆代币 & 配资交易 模拟平台</title>
 <style>
 /* ===== 全局变量 & Reset ===== */
 :root {
@@ -561,19 +561,19 @@ body {
 <!-- ===== 顶部导航 ===== -->
 <header class="header">
   <div class="header-left">
-    <span class="logo">⚡ 杠杆ETF & 配资交易</span>
+    <span class="logo">⚡ 杠杆代币 & 配资交易</span>
     <span class="logo-badge">SIM v2.0</span>
     <span class="tick-indicator"><span class="tick-dot"></span>实时模拟</span>
   </div>
   <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
     <!-- 模式切换 -->
     <div class="mode-switch">
-      <button class="mode-btn active etf-mode" data-mode="etf" onclick="switchMode('etf')">📈 杠杆ETF</button>
+      <button class="mode-btn active etf-mode" data-mode="etf" onclick="switchMode('etf')">📈 杠杆代币</button>
       <button class="mode-btn" data-mode="margin" onclick="switchMode('margin')">⚡ 配资交易</button>
     </div>
     <div class="header-right">
       <div class="header-stat">
-        <div class="header-stat-label" id="headerAssetLabel">ETF总资产</div>
+        <div class="header-stat-label" id="headerAssetLabel">代币总资产</div>
         <div class="header-stat-value" id="totalAssetDisplay">¥1,000,000</div>
       </div>
       <div class="header-stat">
@@ -610,7 +610,7 @@ body {
   <div class="card" id="tradePanel">
     <div class="card-header">
       <div class="card-title"><span class="icon">💹</span> <span id="tradePanelTitle">模拟交易</span></div>
-      <span class="mode-tag etf" id="tradeModeTag">ETF</span>
+      <span class="mode-tag etf" id="tradeModeTag">代币</span>
     </div>
     <div class="card-body" id="tradePanelBody">
       <!-- 由JS动态渲染 -->
@@ -621,7 +621,7 @@ body {
   <div class="card" style="grid-column:1/2;" id="portfolioPanel">
     <div class="card-header">
       <div class="card-title"><span class="icon">📁</span> <span id="portfolioPanelTitle">持仓管理</span></div>
-      <span class="mode-tag etf" id="portfolioModeTag">ETF</span>
+      <span class="mode-tag etf" id="portfolioModeTag">代币</span>
     </div>
     <div class="card-body" id="portfolioPanelBody">
       <!-- 由JS动态渲染 -->
@@ -642,7 +642,7 @@ body {
   <!-- 业绩图表 -->
   <div class="card" style="grid-column:1/-1;">
     <div class="card-header">
-      <div class="card-title"><span class="icon">📈</span> <span id="chartTitle">业绩走势 (ETF模式)</span></div>
+      <div class="card-title"><span class="icon">📈</span> <span id="chartTitle">业绩走势 (代币模式)</span></div>
       <div class="chart-controls">
         <button class="chart-btn active" data-period="all" onclick="setChartPeriod('all')">全部</button>
         <button class="chart-btn" data-period="50" onclick="setChartPeriod('50')">近50天</button>
@@ -663,23 +663,23 @@ body {
     <div class="edu-card">
       <div class="icon">⚡</div>
       <h4>每日重置机制</h4>
-      <p>杠杆ETF每个交易日结束时重置杠杆比例。如果标的日涨3%，3倍ETF涨9%；次日标的跌3%，3倍ETF跌9%。两日累积：标的-0.09%，3倍ETF -0.81%，差异来自重置效应。</p>
+      <p>杠杆代币每个交易日结束时重置杠杆比例。如果标的日涨3%，3倍代币涨9%；次日标的跌3%，3倍代币跌9%。两日累积：标的-0.09%，3倍代币 -0.81%，差异来自重置效应。</p>
       <span class="demo-link" onclick="showModal('dailyReset')">▶ 查看计算示例</span>
     </div>
     <div class="edu-card">
       <div class="icon">🌀</div>
       <h4>波动损耗</h4>
-      <p>在震荡市中，杠杆ETF会因每日重置而产生"波动损耗"。例如标的先涨10%再跌10%，3倍ETF约亏损9.1%，而标的本身仅亏损1%。波动越大，损耗越明显。</p>
+      <p>在震荡市中，杠杆代币会因每日重置而产生"波动损耗"。例如标的先涨10%再跌10%，3倍代币约亏损9.1%，而标的本身仅亏损1%。波动越大，损耗越明显。</p>
       <span class="demo-link" onclick="showModal('volatilityDecay')">▶ 查看计算示例</span>
     </div>
     <div class="edu-card">
       <div class="icon">📐</div>
       <h4>复利效应</h4>
-      <p>杠杆ETF追求的是<strong>日收益率</strong>的倍数，而非区间收益的倍数。在趋势市中杠杆效果显著，在震荡市中损耗明显。长期持有的收益 = 标的收益 × 杠杆 × 波动损耗因子。</p>
+      <p>杠杆代币追求的是<strong>日收益率</strong>的倍数，而非区间收益的倍数。在趋势市中杠杆效果显著，在震荡市中损耗明显。长期持有的收益 = 标的收益 × 杠杆 × 波动损耗因子。</p>
     </div>
     <div class="edu-card" style="border-color:var(--accent-cyan);">
       <div class="icon">📊</div>
-      <h4 style="color:var(--accent-cyan);">产品A：杠杆ETF</h4>
+      <h4 style="color:var(--accent-cyan);">产品A：杠杆代币</h4>
       <p>交易所通过收益互换为客户提供隐性杠杆。客户体验：像买股票一样买卖份额，无需交保证金、无需管强平、无需付利息。交易所收管理费。</p>
     </div>
     <div class="edu-card" style="border-color:var(--accent-orange);">
@@ -1385,8 +1385,8 @@ function renderTradePanel() {
   const tag = document.getElementById('tradeModeTag');
 
   if (state.mode === 'etf') {
-    title.textContent = '模拟交易 (ETF模式)';
-    tag.textContent = 'ETF';
+    title.textContent = '模拟交易 (代币模式)';
+    tag.textContent = '代币';
     tag.className = 'mode-tag etf';
     body.innerHTML = `
       <div class="trade-form">
@@ -1475,8 +1475,8 @@ function renderPortfolioPanel() {
   const body = document.getElementById('portfolioPanelBody');
 
   if (state.mode === 'etf') {
-    title.textContent = '持仓管理 (ETF模式)';
-    tag.textContent = 'ETF';
+    title.textContent = '持仓管理 (代币模式)';
+    tag.textContent = '代币';
     tag.className = 'mode-tag etf';
 
     const totalAsset = getTotalAsset();
@@ -1509,7 +1509,7 @@ function renderPortfolioPanel() {
     const list = document.getElementById('positionList');
     const posEntries = Object.entries(state.positions).filter(([_, p]) => p.shares > 0);
     if (posEntries.length === 0) {
-      list.innerHTML = '<div class="empty-state">暂无ETF持仓</div>';
+      list.innerHTML = '<div class="empty-state">暂无代币持仓</div>';
       return;
     }
     list.innerHTML = '';
@@ -1705,7 +1705,7 @@ function updateHeaderStats() {
     retDisplay.textContent = (pnl >= 0 ? '+' : '') + pnlPct.toFixed(2) + '%';
     retDisplay.className = 'header-stat-value ' + (pnl >= 0 ? 'positive' : 'negative');
   } else {
-    label.textContent = 'ETF总资产';
+    label.textContent = '代币总资产';
     const total = getTotalAsset();
     const pnl = total - 1000000;
     const pnlPct = (pnl / 1000000) * 100;
@@ -1850,7 +1850,7 @@ function drawChart() {
 
   // 更新图表标题
   const chartTitle = document.getElementById('chartTitle');
-  chartTitle.textContent = isMargin ? '业绩走势 (配资模式)' : '业绩走势 (ETF模式)';
+  chartTitle.textContent = isMargin ? '业绩走势 (配资模式)' : '业绩走势 (代币模式)';
 }
 
 function setChartPeriod(p) {
@@ -1885,30 +1885,30 @@ function showModal(topic) {
   if (topic === 'dailyReset') {
     title.textContent = '每日重置机制 — 计算示例';
     body.innerHTML = `
-      <p>假设某标的初始价格 <strong>¥100</strong>，3倍杠杆ETF初始价格 <strong>¥100</strong>。</p>
+      <p>假设某标的初始价格 <strong>¥100</strong>，3倍杠杆代币初始价格 <strong>¥100</strong>。</p>
       <p><strong>第1天：</strong>标的涨 <span style="color:var(--accent-green);">+10%</span> → ¥110<br>
-      3x ETF涨 <span style="color:var(--accent-green);">+30%</span> → ¥130 <span style="color:var(--text-muted);">（10% × 3）</span></p>
+      3x 代币涨 <span style="color:var(--accent-green);">+30%</span> → ¥130 <span style="color:var(--text-muted);">（10% × 3）</span></p>
       <p><strong>第2天：</strong>标的跌 <span style="color:var(--accent-red);">-10%</span> → ¥99<br>
-      3x ETF跌 <span style="color:var(--accent-red);">-30%</span> → ¥91 <span style="color:var(--text-muted);">（-10% × 3）</span></p>
+      3x 代币跌 <span style="color:var(--accent-red);">-30%</span> → ¥91 <span style="color:var(--text-muted);">（-10% × 3）</span></p>
       <p><strong>结果对比：</strong><br>
       标的净变化：-1%<br>
-      3x ETF净变化：<strong style="color:var(--accent-red);">-9%</strong>（而非 -3%）</p>
-      <p style="color:var(--accent-cyan);font-weight:600;">关键点：杠杆ETF追求的是日收益率的倍数，复利效应导致偏离。</p>
+      3x 代币净变化：<strong style="color:var(--accent-red);">-9%</strong>（而非 -3%）</p>
+      <p style="color:var(--accent-cyan);font-weight:600;">关键点：杠杆代币追求的是日收益率的倍数，复利效应导致偏离。</p>
     `;
   } else if (topic === 'volatilityDecay') {
     title.textContent = '波动损耗 — 计算示例';
     body.innerHTML = `
-      <p>这是杠杆ETF最关键的机制——<strong style="color:var(--accent-yellow);">震荡市中的损耗</strong>：</p>
+      <p>这是杠杆代币最关键的机制——<strong style="color:var(--accent-yellow);">震荡市中的损耗</strong>：</p>
       <p><strong>场景：</strong>标的在两天内先涨后跌，幅度相同。</p>
-      <p>第一天：标的 <span style="color:var(--accent-green);">+10%</span> → 3x ETF <span style="color:var(--accent-green);">+30%</span><br>
-      第二天：标的 <span style="color:var(--accent-red);">-10%</span> → 3x ETF <span style="color:var(--accent-red);">-30%</span></p>
+      <p>第一天：标的 <span style="color:var(--accent-green);">+10%</span> → 3x 代币 <span style="color:var(--accent-green);">+30%</span><br>
+      第二天：标的 <span style="color:var(--accent-red);">-10%</span> → 3x 代币 <span style="color:var(--accent-red);">-30%</span></p>
       <p><strong>结果：</strong><br>
       标的：100 → 110 → 99（-1%）<br>
-      3x ETF：100 → 130 → <strong style="color:var(--accent-red);">91（-9%）</strong><br>
+      3x 代币：100 → 130 → <strong style="color:var(--accent-red);">91（-9%）</strong><br>
       3倍杠杆预期收益：-1% × 3 = <strong>-3%</strong><br>
       实际收益：<strong>-9%</strong> ← 额外的<strong style="color:var(--accent-yellow);">-6%就是波动损耗</strong></p>
       <p style="color:var(--text-secondary);font-size:12px;">
-      💡 波动越大、震荡次数越多，损耗越严重。这就是杠杆ETF不适合长期持有的根本原因。</p>
+      💡 波动越大、震荡次数越多，损耗越严重。这就是杠杆代币不适合长期持有的根本原因。</p>
     `;
   }
 }
@@ -1926,9 +1926,9 @@ window.addEventListener('resize', () => { drawChart(); });
 // 初始渲染
 switchMode('etf');
 
-console.log('⚡ 杠杆ETF & 配资交易 模拟平台 v2.0 已加载');
-console.log('📊 品种:', ETFs.length, '(含标的和杠杆ETF)');
-console.log('💡 双模式: ETF模式 / 配资交易模式');
+console.log('⚡ 杠杆代币 & 配资交易 模拟平台 v2.0 已加载');
+console.log('📊 品种:', ETFs.length, '(含标的和杠杆代币)');
+console.log('💡 双模式: 代币模式 / 配资交易模式');
 console.log('💡 操作提示: 点击"推进一天"模拟行情变化，或点击"自动运行"连续模拟');
 </script>
 </body>
