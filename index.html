@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>杠杆ETF模拟交易平台</title>
+<title>杠杆ETF模拟交易平台 v2</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -11,13 +11,10 @@
     color: #e2e8f0;
     font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     padding: 24px;
   }
-  .container { max-width: 600px; width: 100%; text-align: center; }
+  .container { max-width: 640px; margin: 0 auto; }
+  .header { text-align: center; padding: 40px 0 32px; }
   h1 {
     font-size: 28px;
     font-weight: 700;
@@ -25,58 +22,114 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
-  .subtitle { color: #64748b; font-size: 14px; margin-bottom: 32px; }
+  .badge {
+    display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 4px;
+    background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3);
+  }
+  .subtitle { color: #64748b; font-size: 13px; margin-top: 8px; }
+  .section-title { font-size: 14px; color: #94a3b8; margin: 24px 0 12px; font-weight: 600; }
   .card {
     background: #1a2332;
     border: 1px solid #1e3a5f;
     border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 16px;
-    text-align: left;
-    transition: all .2s;
+    padding: 20px;
+    margin-bottom: 12px;
     display: block;
     text-decoration: none;
+    transition: all .2s;
   }
   .card:hover { border-color: #3b82f6; background: #1e293b; transform: translateY(-2px); }
-  .card .icon { font-size: 28px; margin-bottom: 8px; }
-  .card h2 { font-size: 18px; color: #e2e8f0; margin-bottom: 4px; }
-  .card p { font-size: 13px; color: #94a3b8; line-height: 1.6; }
-  .card .tag {
-    display: inline-block;
-    font-size: 10px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: 600;
-    margin-top: 8px;
+  .card-row { display: flex; align-items: flex-start; gap: 14px; }
+  .card-icon { font-size: 28px; flex-shrink: 0; }
+  .card-body { flex: 1; }
+  .card-body h2 { font-size: 16px; color: #e2e8f0; margin-bottom: 4px; }
+  .card-body p { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+  .card-tags { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600;
   }
-  .tag-green { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .tag-cyan { background: rgba(6,182,212,0.15); color: #06b6d4; }
   .tag-orange { background: rgba(249,115,22,0.15); color: #f97316; }
-  .footer { margin-top: 24px; font-size: 12px; color: #475569; }
+  .tag-purple { background: rgba(168,85,247,0.15); color: #a855f7; }
+  .tag-green { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .tag-blue { background: rgba(59,130,246,0.15); color: #60a5fa; }
+  .v2-flag {
+    display: inline-block; font-size: 10px; padding: 1px 6px; border-radius: 3px;
+    background: rgba(6,182,212,0.2); color: #06b6d4; border: 1px solid rgba(6,182,212,0.3);
+    margin-left: 6px; font-weight: 600;
+  }
+  .v1-note { font-size: 12px; color: #475569; text-align: center; margin-top: 16px; }
+  .v1-note a { color: #64748b; text-decoration: underline; }
+  .footer { text-align: center; margin-top: 24px; padding: 20px 0; font-size: 12px; color: #475569; border-top: 1px solid #1e293b; }
+  .footer a { color: #3b82f6; text-decoration: none; }
 </style>
 </head>
 <body>
 <div class="container">
-  <h1>⚡ 杠杆ETF模拟交易平台</h1>
-  <p class="subtitle">基于A股标的的杠杆ETF模拟交易 + 交易所配资风控管理 v1.0</p>
+  <div class="header">
+    <h1>⚡ 杠杆ETF模拟交易平台</h1>
+    <span class="badge">v2.0 — 双产品线</span>
+    <div class="subtitle">同一份资金，两种产品 | 交易所视角</div>
+  </div>
 
-  <a class="card" href="leveraged_etf_simulator.html">
-    <div class="icon">📈</div>
-    <h2>交易端 — 模拟交易</h2>
-    <p>模拟买入/卖出杠杆ETF，体验每日重置和波动损耗机制。支持茅台2x/3x、兆易2x/3x、宁德2x/3x，初始资金 ¥1,000,000。</p>
-    <span class="tag tag-green">进入交易 →</span>
+  <div class="section-title">📦 前台 — 客户交易端</div>
+
+  <a class="card" href="leveraged_etf_simulator_v2.html">
+    <div class="card-row">
+      <div class="card-icon">📈</div>
+      <div class="card-body">
+        <h2>交易端 v2 <span class="v2-flag">推荐</span></h2>
+        <p>两种交易模式：<strong>杠杆ETF</strong>（买入份额，体验每日重置）和 <strong>配资交易</strong>（存入保证金，管理强平线）。共用同一套行情引擎，体验两种产品的差异。</p>
+        <div class="card-tags">
+          <span class="tag tag-cyan">📈 杠杆ETF</span>
+          <span class="tag tag-orange">⚡ 配资交易</span>
+          <span class="tag tag-purple">模式切换</span>
+        </div>
+      </div>
+    </div>
   </a>
 
-  <a class="card" href="exchange_admin.html">
-    <div class="icon">⚙️</div>
-    <h2>管理端 — 交易所配资风控平台</h2>
-    <p>从交易所视角管理配资业务：监控客户持仓、管理资金池、控制保证金风险、压力测试。含完整的配资原理说明。</p>
-    <span class="tag tag-orange">进入管理后台 →</span>
+  <div class="section-title">⚙️ 后台 — 交易所管理端</div>
+
+  <a class="card" href="exchange_admin_v2.html">
+    <div class="card-row">
+      <div class="card-icon">🏦</div>
+      <div class="card-body">
+        <h2>管理后台 v2 <span class="v2-flag">推荐</span></h2>
+        <p>统一风险概览：总风险敞口 = ETF互换敞口 + 配资敞口。双业务线管理，分别查看ETF产品线和配资产品线的客户、收入、风控数据。</p>
+        <div class="card-tags">
+          <span class="tag tag-cyan">📊 ETF业务线</span>
+          <span class="tag tag-orange">⚡ 配资业务线</span>
+          <span class="tag tag-blue">统一风控</span>
+        </div>
+      </div>
+    </div>
   </a>
+
+  <div class="section-title">📖 文档</div>
+
+  <a class="card" href="models_analysis.html">
+    <div class="card-row">
+      <div class="card-icon">📋</div>
+      <div class="card-body">
+        <h2>模式对比分析</h2>
+        <p>杠杆ETF vs 配资的完整差异梳理：同一份风险，两种产品包装。含15维度对比表、收益互换计算逻辑、现有代码问题定位。</p>
+        <div class="card-tags">
+          <span class="tag tag-blue">业务规则</span>
+          <span class="tag tag-green">分析文档</span>
+        </div>
+      </div>
+    </div>
+  </a>
+
+  <div class="v1-note">
+    <a href="leveraged_etf_simulator.html">使用旧版交易端</a> · <a href="exchange_admin.html">使用旧版管理后台</a>（v1.0）
+  </div>
 
   <div class="footer">
-    <a href="https://github.com/zhh-2000/leveraged-etf-simulator" style="color:#3b82f6;text-decoration:none;">GitHub 仓库</a>
+    <a href="https://github.com/zhh-2000/leveraged-etf-simulator">GitHub 仓库</a>
   </div>
 </div>
 </body>
