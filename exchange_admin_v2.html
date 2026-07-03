@@ -554,10 +554,10 @@ body {
     <div class="rh-item">
       <div class="rh-label">总风险敞口</div>
       <div class="rh-value cyan" id="totalRiskExposure">&#165;0</div>
-      <div class="rh-sub">ETF互换敞口 + 配资敞口</div>
+      <div class="rh-sub">代币互换敞口 + 配资敞口</div>
     </div>
     <div class="rh-item">
-      <div class="rh-label">ETF互换敞口</div>
+      <div class="rh-label">代币互换敞口</div>
       <div class="rh-value" id="etfRiskExposure" style="color:#06b6d4;">&#165;0</div>
       <div class="rh-sub">通过收益互换提供的杠杆</div>
     </div>
@@ -576,7 +576,7 @@ body {
 
 <!-- ===== 业务线切换 ===== -->
 <div class="biz-switcher">
-  <button class="biz-btn etf active" data-biz="etf" onclick="switchBizLine('etf')">&#x1F4C8; ETF业务线（收益互换）</button>
+  <button class="biz-btn etf active" data-biz="etf" onclick="switchBizLine('etf')">&#x1F4C8; 代币业务线（收益互换）</button>
   <button class="biz-btn margin" data-biz="margin" onclick="switchBizLine('margin')">&#x26A1; 配资业务线（直接借贷）</button>
   <div class="biz-divider"></div>
   <span class="biz-stat" id="bizStatus">两种产品，同一份风险</span>
@@ -584,9 +584,9 @@ body {
 
 <!-- ===== ETF Tab按钮 ===== -->
 <div class="tab-bar" id="tabBarEtf">
-  <button class="tab-btn active" data-subtab="etf-overview" onclick="switchSubTab('etf','etf-overview')">&#x1F4CA; ETF总览</button>
-  <button class="tab-btn" data-subtab="etf-products" onclick="switchSubTab('etf','etf-products')">&#x1F4E6; ETF产品</button>
-  <button class="tab-btn" data-subtab="etf-clients" onclick="switchSubTab('etf','etf-clients')">&#x1F465; ETF客户</button>
+  <button class="tab-btn active" data-subtab="etf-overview" onclick="switchSubTab('etf','etf-overview')">&#x1F4CA; 代币总览</button>
+  <button class="tab-btn" data-subtab="etf-products" onclick="switchSubTab('etf','etf-products')">&#x1F4E6; 代币产品</button>
+  <button class="tab-btn" data-subtab="etf-clients" onclick="switchSubTab('etf','etf-clients')">&#x1F465; 代币客户</button>
   <button class="tab-btn" data-subtab="etf-education" onclick="switchSubTab('etf','etf-education')">&#x1F4D6; 原理</button>
 </div>
 
@@ -610,9 +610,9 @@ body {
   <div class="sub-tab-content active" id="sub-etf-overview">
     <div class="dashboard-grid">
       <div class="stat-card cyan">
-        <div class="stat-label">ETF总AUM</div>
+        <div class="stat-label">代币总AUM</div>
         <div class="stat-value cyan" id="etfAum">&#165;0</div>
-        <div class="stat-sub">客户ETF持仓总市值</div>
+        <div class="stat-sub">客户代币持仓总市值</div>
       </div>
       <div class="stat-card green">
         <div class="stat-label">管理费收入(日)</div>
@@ -622,21 +622,21 @@ body {
       <div class="stat-card blue">
         <div class="stat-label">管理费收入(累计)</div>
         <div class="stat-value" id="etfTotalFee">&#165;0</div>
-        <div class="stat-sub">所有ETF管理费总和</div>
+        <div class="stat-sub">所有代币管理费总和</div>
       </div>
       <div class="stat-card purple">
-        <div class="stat-label">ETF产品数量</div>
+        <div class="stat-label">代币产品数量</div>
         <div class="stat-value purple" id="etfProductCount">0</div>
-        <div class="stat-sub">杠杆ETF产品总数</div>
+        <div class="stat-sub">杠杆代币产品总数</div>
       </div>
     </div>
 
     <div class="explain-section">
-      <h3>&#x1F3E6; ETF业务总览</h3>
+      <h3>&#x1F3E6; 代币业务总览</h3>
       <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
-        交易所发行和管理杠杆ETF产品。客户通过购买ETF份额间接获得杠杆化标的资产敞口。
+        交易所发行和管理杠杆代币产品。客户通过购买代币份额间接获得杠杆化标的资产敞口。
         交易所收取<strong style="color:var(--accent-green);">年化0.8%管理费</strong>，每日从基金净资产中计提。
-        与配资业务不同，ETF业务<strong style="color:var(--accent-cyan);">不涉及利息、保证金和强制平仓</strong>，
+        与配资业务不同，代币业务<strong style="color:var(--accent-cyan);">不涉及利息、保证金和强制平仓</strong>，
         客户承担投资盈亏，交易所收取稳定的管理费收入。
       </p>
     </div>
@@ -644,7 +644,7 @@ body {
     <!-- ETF产品概览表 -->
     <div class="card">
       <div class="card-header">
-        <div class="card-title">&#x1F4E6; ETF产品概览</div>
+        <div class="card-title">&#x1F4E6; 代币产品概览</div>
       </div>
       <div class="card-body">
         <table class="data-table" id="etfProductOverviewTable">
@@ -661,7 +661,7 @@ body {
   <div class="sub-tab-content" id="sub-etf-products">
     <div class="card">
       <div class="card-header">
-        <div class="card-title">&#x1F4E6; 杠杆ETF产品详情</div>
+        <div class="card-title">&#x1F4E6; 杠杆代币产品详情</div>
         <div style="font-size:11px;color:var(--text-muted);">管理费年化0.8%每日从NAV计提</div>
       </div>
       <div class="card-body">
@@ -674,9 +674,9 @@ body {
   <div class="sub-tab-content" id="sub-etf-clients">
     <div class="dashboard-grid">
       <div class="stat-card blue">
-        <div class="stat-label">ETF客户总数</div>
+        <div class="stat-label">代币客户总数</div>
         <div class="stat-value cyan" id="etfClientCount">0</div>
-        <div class="stat-sub">持有ETF的客户</div>
+        <div class="stat-sub">持有代币的客户</div>
       </div>
       <div class="stat-card green">
         <div class="stat-label">盈利客户</div>
@@ -691,19 +691,19 @@ body {
       <div class="stat-card orange">
         <div class="stat-label">总持仓AUM</div>
         <div class="stat-value orange" id="etfClientAum">&#165;0</div>
-        <div class="stat-sub">ETF持仓总市值</div>
+        <div class="stat-sub">代币持仓总市值</div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <div class="card-title">&#x1F465; ETF客户持仓明细</div>
+        <div class="card-title">&#x1F465; 代币客户持仓明细</div>
         <span style="font-size:11px;color:var(--text-muted);">点击客户查看详情</span>
       </div>
       <div class="card-body" style="padding:0;">
         <table class="data-table" id="etfClientTable">
           <thead>
-            <tr><th>客户</th><th>ETF数量</th><th class="text-right">总持仓市值</th><th class="text-right">总投入</th><th class="text-right">浮动盈亏</th><th class="text-right">收益率</th></tr>
+            <tr><th>客户</th><th>代币数量</th><th class="text-right">总持仓市值</th><th class="text-right">总投入</th><th class="text-right">浮动盈亏</th><th class="text-right">收益率</th></tr>
           </thead>
           <tbody id="etfClientTableBody"></tbody>
         </table>
@@ -714,10 +714,10 @@ body {
   <!-- ETF 原理 -->
   <div class="sub-tab-content" id="sub-etf-education">
     <div class="explain-section">
-      <h3>&#x1F3D4; 杠杆ETF的本质：交易所通过收益互换为客户配资</h3>
+      <h3>&#x1F3D4; 杠杆代币的本质：交易所通过收益互换为客户配资</h3>
       <p style="font-size:13px;color:var(--text-secondary);line-height:2;">
-        表面上，客户买了交易所发行的<strong style="color:var(--accent-cyan);">杠杆ETF</strong>。实际上，ETF产品与交易所之间有一笔<strong style="color:var(--accent-yellow);">总收益互换(Total Return Swap)</strong>：
-        交易所向ETF支付标的收益的<strong>L倍</strong>，ETF向交易所支付标的收益的<strong>1倍</strong>。差额部分，本质上是交易所为客户提供了<strong style="color:var(--accent-orange);">隐性的杠杆资金</strong>。
+        表面上，客户买了交易所发行的<strong style="color:var(--accent-cyan);">杠杆代币</strong>。实际上，代币产品与交易所之间有一笔<strong style="color:var(--accent-yellow);">总收益互换(Total Return Swap)</strong>：
+        交易所向代币支付标的收益的<strong>L倍</strong>，代币向交易所支付标的收益的<strong>1倍</strong>。差额部分，本质上是交易所为客户提供了<strong style="color:var(--accent-orange);">隐性的杠杆资金</strong>。
       </p>
 
       <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;flex-wrap:wrap;">
@@ -727,7 +727,7 @@ body {
         </div>
         <div style="color:var(--accent-cyan);font-size:18px;">&#x2192;</div>
         <div style="background:var(--bg-secondary);border:2px solid var(--accent-cyan);border-radius:8px;padding:10px 14px;text-align:center;min-width:130px;">
-          <div style="font-size:11px;color:var(--text-muted);">杠杆ETF</div>
+          <div style="font-size:11px;color:var(--text-muted);">杠杆代币</div>
           <div style="font-size:13px;font-weight:600;color:var(--accent-cyan);">&#x2194; 收益互换</div>
         </div>
         <div style="color:var(--accent-cyan);font-size:18px;">&#x2194;</div>
@@ -745,11 +745,11 @@ body {
             <td style="padding:6px;font-family:var(--font-mono);">+3%</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border-subtle);">
-            <td style="padding:6px;color:var(--text-secondary);">交易所向ETF支付</td>
+            <td style="padding:6px;color:var(--text-secondary);">交易所向代币支付</td>
             <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-green);">+9%（标的涨幅 &#x00D7; 3倍）</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border-subtle);">
-            <td style="padding:6px;color:var(--text-secondary);">ETF向交易所支付</td>
+            <td style="padding:6px;color:var(--text-secondary);">代币向交易所支付</td>
             <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-red);">+3%（标的涨幅 &#x00D7; 1倍）</td>
           </tr>
           <tr>
@@ -766,12 +766,12 @@ body {
         <table style="width:100%;font-size:13px;border-collapse:collapse;">
           <tr style="border-bottom:1px solid var(--border-subtle);background:rgba(6,182,212,0.05);">
             <td style="padding:8px;font-weight:600;">维度</td>
-            <td style="padding:8px;font-weight:600;color:var(--accent-cyan);">&#x1F4C8; 杠杆ETF（收益互换）</td>
+            <td style="padding:8px;font-weight:600;color:var(--accent-cyan);">&#x1F4C8; 杠杆代币（收益互换）</td>
             <td style="padding:8px;font-weight:600;color:var(--accent-orange);">&#x26A1; 直接配资</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border-subtle);">
             <td style="padding:6px;color:var(--text-secondary);">交易所风险敞口</td>
-            <td style="padding:6px;font-family:var(--font-mono);">ETF规模 &#x00D7; (杠杆-1)</td>
+            <td style="padding:6px;font-family:var(--font-mono);">代币规模 &#x00D7; (杠杆-1)</td>
             <td style="padding:6px;font-family:var(--font-mono);">配资金额</td>
           </tr>
           <tr style="border-bottom:1px solid var(--border-subtle);">
@@ -796,12 +796,12 @@ body {
     <div class="explain-section">
       <h3>&#x1F4D6; 每日重置机制</h3>
       <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
-        每个交易日收盘后，ETF产品与交易所重新签订互换合约，重置名义本金，使杠杆比例恢复目标值。
+        每个交易日收盘后，代币产品与交易所重新签订互换合约，重置名义本金，使杠杆比例恢复目标值。
       </p>
       <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;margin:12px 0;">
         <h4 style="color:var(--accent-cyan);margin-bottom:8px;">&#x26A1; 波动率拖累</h4>
         <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
-          由于每日重置，震荡行情中会产生路径依赖损耗。即使标的回到原点，ETF净值也可能低于初始值。
+          由于每日重置，震荡行情中会产生路径依赖损耗。即使标的回到原点，代币净值也可能低于初始值。
           这个损耗由客户承担，交易所不受影响（交易所通过对冲管理风险）。
         </p>
       </div>
@@ -1248,12 +1248,12 @@ const ETF_PRODUCTS = [
 // ETF客户：每人持有不同ETF份额
 // 持仓结构: { etfId, shares, entryNav, marketValue, pnl }
 const SIM_ETF_CLIENTS = [
-  { id: 'E001', name: 'ETF客户_张明', capital: 1000000, positions: {} },
-  { id: 'E002', name: 'ETF客户_李华', capital: 2000000, positions: {} },
-  { id: 'E003', name: 'ETF客户_王芳', capital: 500000, positions: {} },
-  { id: 'E004', name: 'ETF客户_赵强', capital: 3000000, positions: {} },
-  { id: 'E005', name: 'ETF客户_陈丽', capital: 800000, positions: {} },
-  { id: 'E006', name: 'ETF客户_刘伟', capital: 1500000, positions: {} },
+  { id: 'E001', name: '代币客户_张明', capital: 1000000, positions: {} },
+  { id: 'E002', name: '代币客户_李华', capital: 2000000, positions: {} },
+  { id: 'E003', name: '代币客户_王芳', capital: 500000, positions: {} },
+  { id: 'E004', name: '代币客户_赵强', capital: 3000000, positions: {} },
+  { id: 'E005', name: '代币客户_陈丽', capital: 800000, positions: {} },
+  { id: 'E006', name: '代币客户_刘伟', capital: 1500000, positions: {} },
 ];
 
 // ============================================================
@@ -1460,7 +1460,7 @@ function advanceAdminDay() {
   advanceEtfDay();
   advanceMarginDay();
   renderAll();
-  var msg = '第 ' + EXCHANGE.day + ' 天完成。ETF管理费: ¥' + EXCHANGE.totalDayEtfMgmtFee.toFixed(2) +
+  var msg = '第 ' + EXCHANGE.day + ' 天完成。代币管理费: ¥' + EXCHANGE.totalDayEtfMgmtFee.toFixed(2) +
             ' | 配资利息: ¥' + EXCHANGE.totalDayMarginInterest.toFixed(2);
   showToast(msg, 'info');
  }
@@ -1523,7 +1523,7 @@ function updateBizStatus() {
   var aum = getEtfTotalAum();
   var fee = EXCHANGE.totalEtfMgmtFee;
   document.getElementById('bizStatus').textContent =
-    'ETF: AUM ¥' + aum.toFixed(0) + ' | 管理费 ¥' + fee.toFixed(2) +
+    '代币: AUM ¥' + aum.toFixed(0) + ' | 管理费 ¥' + fee.toFixed(2) +
     ' | 配资利息 ¥' + EXCHANGE.totalMarginInterest.toFixed(2) + ' | 穿仓 ¥' + EXCHANGE.totalBadDebt.toFixed(0);
 }
 
@@ -1685,10 +1685,10 @@ function renderEtfClients() {
 function showEtfClientDetail(clientId) {
   var c = SIM_ETF_CLIENTS.find(function(cl) { return cl.id === clientId; });
   if (!c) return;
-  document.getElementById('modalTitle').textContent = c.name + ' - ETF持仓详情 (' + c.id + ')';
+  document.getElementById('modalTitle').textContent = c.name + ' - 代币持仓详情 (' + c.id + ')';
   var body = document.getElementById('modalBody');
   var html = '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">初始资金: <strong style="color:var(--text-primary);font-family:var(--font-mono);">¥' + c.capital.toFixed(0) + '</strong></p>';
-  html += '<table class="data-table"><thead><tr><th>ETF产品</th><th class="text-right">份额</th><th class="text-right">入场NAV</th><th class="text-right">当前市值</th><th class="text-right">投入</th><th class="text-right">浮动盈亏</th></tr></thead><tbody>';
+  html += '<table class="data-table"><thead><tr><th>代币产品</th><th class="text-right">份额</th><th class="text-right">入场NAV</th><th class="text-right">当前市值</th><th class="text-right">投入</th><th class="text-right">浮动盈亏</th></tr></thead><tbody>';
   for (var pid in c.positions) {
     if (!c.positions.hasOwnProperty(pid)) continue;
     var pos = c.positions[pid];
