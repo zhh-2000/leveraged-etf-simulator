@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交易所配资风控管理平台</title>
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2332;
+  --bg-card-hover: #1e293b;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-yellow: #eab308;
+  --accent-orange: #f97316;
+  --accent-purple: #a855f7;
+  --border-color: #1e3a5f;
+  --border-subtle: #1e293b;
+  --shadow-glow: 0 0 20px rgba(59,130,246,0.1);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font-mono: 'Consolas','Courier New',monospace;
+  --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 4px; }
+
+/* ===== 顶部导航 ===== */
+.header {
+  background: linear-gradient(135deg, #0f1729 0%, #1a2332 100%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange), var(--accent-red));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-badge {
+  font-size: 10px;
+  background: rgba(249,115,22,0.15);
+  color: var(--accent-orange);
+  border: 1px solid rgba(249,115,22,0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.header-tabs { display: flex; gap: 4px; }
+.tab-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 6px;
+  transition: all .2s;
+  font-weight: 500;
+}
+.tab-btn:hover { border-color: var(--accent-cyan); color: var(--text-secondary); }
+.tab-btn.active { background: rgba(6,182,212,0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+.header-right { display: flex; align-items: center; gap: 16px; }
+.header-stat { text-align: right; }
+.header-stat-label { font-size: 11px; color: var(--text-muted); }
+.header-stat-value { font-size: 15px; font-weight: 700; font-family: var(--font-mono); }
+
+/* ===== 内容区 ===== */
+.content { max-width: 1440px; margin: 0 auto; padding: 16px; }
+
+/* ===== 卡片 ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-body { padding: 12px 16px; }
+
+/* ===== Dashboard 指标 ===== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+}
+.stat-card.blue::before { background: var(--accent-blue); }
+.stat-card.green::before { background: var(--accent-green); }
+.stat-card.orange::before { background: var(--accent-orange); }
+.stat-card.red::before { background: var(--accent-red); }
+.stat-card.cyan::before { background: var(--accent-cyan); }
+.stat-card.purple::before { background: var(--accent-purple); }
+.stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.stat-value { font-size: 22px; font-weight: 700; font-family: var(--font-mono); }
+.stat-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.stat-value.green { color: var(--accent-green); }
+.stat-value.red { color: var(--accent-red); }
+.stat-value.cyan { color: var(--accent-cyan); }
+.stat-value.yellow { color: var(--accent-yellow); }
+.stat-value.orange { color: var(--accent-orange); }
+
+/* ===== 配资原理说明 ===== */
+.explain-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.explain-section h3 {
+  font-size: 15px;
+  color: var(--accent-cyan);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.explain-section .flow-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  flex-wrap: wrap;
+}
+.flow-node {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  text-align: center;
+  min-width: 120px;
+}
+.flow-node .node-label { font-size: 11px; color: var(--text-muted); }
+.flow-node .node-value { font-size: 14px; font-weight: 700; margin-top: 4px; }
+.flow-arrow { color: var(--accent-cyan); font-size: 20px; }
+
+/* ===== 表格 ===== */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 8px 10px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(30,41,59,0.5);
+}
+.data-table tr:hover td { background: rgba(59,130,246,0.04); }
+.data-table .text-right { text-align: right; }
+.data-table .text-center { text-align: center; }
+
+/* 风险等级标签 */
+.risk-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.risk-low { background: rgba(34,197,94,0.15); color: var(--accent-green); }
+.risk-mid { background: rgba(234,179,8,0.15); color: var(--accent-yellow); }
+.risk-high { background: rgba(249,115,22,0.15); color: var(--accent-orange); }
+.risk-danger { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+.mono { font-family: var(--font-mono); }
+.up { color: var(--accent-green); }
+.down { color: var(--accent-red); }
+.tag-lev { display:inline-block; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:600; }
+.tag-lev.l2 { background:rgba(59,130,246,0.15); color:var(--accent-blue); }
+.tag-lev.l3 { background:rgba(168,85,247,0.15); color:var(--accent-purple); }
+
+/* ===== 风控警报 ===== */
+.alerts-list { display: flex; flex-direction: column; gap: 6px; }
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  border-left: 3px solid;
+}
+.alert-item.warning { background: rgba(234,179,8,0.08); border-color: var(--accent-yellow); }
+.alert-item.danger { background: rgba(239,68,68,0.08); border-color: var(--accent-red); }
+.alert-item.info { background: rgba(59,130,246,0.08); border-color: var(--accent-blue); }
+.alert-icon { font-size: 16px; }
+.alert-text { flex: 1; }
+.alert-time { font-size: 11px; color: var(--text-muted); }
+
+/* ===== Tab 内容 ===== */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== 压力测试 ===== */
+.stress-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.stress-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+}
+.stress-item:hover { border-color: var(--accent-cyan); }
+.stress-item h5 { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.stress-item .result {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+/* ===== 客户详情弹窗 ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-content .close-btn {
+  margin-top: 16px;
+  padding: 8px 24px;
+  background: var(--accent-blue);
+  border: none;
+  color: #fff;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* ===== 杠杆产品卡片 ===== */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.product-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.product-card h5 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.prod-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 3px 0;
+  color: var(--text-secondary);
+}
+.prod-row .val { font-family: var(--font-mono); color: var(--text-primary); }
+.progress-bar {
+  height: 4px;
+  background: #1e293b;
+  border-radius: 2px;
+  margin: 6px 0;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .5s;
+}
+.progress-fill.safe { background: var(--accent-green); }
+.progress-fill.warn { background: var(--accent-yellow); }
+.progress-fill.danger { background: var(--accent-orange); }
+.progress-fill.critical { background: var(--accent-red); }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 200;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all .3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(0); }
+.toast.info { background: rgba(59,130,246,0.2); border: 1px solid var(--accent-blue); color: var(--accent-blue); }
+
+/* ===== 响应式 ===== */
+@media (max-width: 1024px) {
+  .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .stress-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .products-grid { grid-template-columns: 1fr; }
+  .header { flex-direction: column; gap: 8px; }
+  .header-tabs { flex-wrap: wrap; }
+}
+
+/* ==== 风控面板 Gauge ===== */
+.gauge-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.gauge-box {
+  flex: 1;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+}
+.gauge-box .gauge-label { font-size: 11px; color: var(--text-muted); }
+.gauge-box .gauge-value { font-size: 28px; font-weight: 700; font-family: var(--font-mono); margin: 4px 0; }
+.gauge-box .gauge-bar {
+  height: 6px;
+  background: #1e293b;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.gauge-box .gauge-fill { height: 100%; border-radius: 3px; transition: width .5s; }
+.level-safe { color: var(--accent-green); }
+.level-warn { color: var(--accent-yellow); }
+.level-danger { color: var(--accent-red); }
+
+/* ===== 时间控制 ===== */
+.time-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.time-control button {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 12px;
+}
+.time-control button:hover { border-color: var(--accent-cyan); }
+
+/* ===== 配资引擎流程图 ===== */
+.engine-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+.engine-step {
+  flex: 1;
+  min-width: 140px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 14px;
+  position: relative;
+  text-align: center;
+}
+.engine-step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-cyan);
+  font-size: 18px;
+  z-index: 1;
+}
+.engine-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.engine-step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+.engine-step .step-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(6,182,212,0.15);
+  color: var(--accent-cyan);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.engine-step .step-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.engine-step .step-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<!-- ===== 顶部导航 ===== -->
+<header class="header">
+  <div class="header-left">
+    <span class="logo">⚙ 交易所配资风控平台</span>
+    <span class="logo-badge">ADMIN v1.0</span>
+    <div class="header-tabs">
+      <button class="tab-btn active" data-tab="dashboard" onclick="switchTab('dashboard')">📊 总览</button>
+      <button class="tab-btn" data-tab="products" onclick="switchTab('products')">📦 产品</button>
+      <button class="tab-btn" data-tab="clients" onclick="switchTab('clients')">👥 客户</button>
+      <button class="tab-btn" data-tab="risk" onclick="switchTab('risk')">⚠️ 风控</button>
+      <button class="tab-btn" data-tab="education" onclick="switchTab('education')">📖 原理</button>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="time-control">
+      <span style="font-size:12px;color:var(--text-muted);">模拟第 <span id="adminDayCount">0</span> 天</span>
+      <button onclick="advanceAdminDay()">▶ 推进一天</button>
+      <button onclick="startAdminAuto()" id="adminAutoBtn">▶ 自动</button>
+    </div>
+    <a href="leveraged_etf_simulator.html" target="_blank" style="font-size:12px;color:var(--accent-cyan);text-decoration:none;">进入交易端 →</a>
+  </div>
+</header>
+
+<div class="content">
+
+<!-- ===== Tab 1: 总览 ===== -->
+<div class="tab-content active" id="tab-dashboard">
+
+  <div class="dashboard-grid">
+    <div class="stat-card blue">
+      <div class="stat-label">总管理资产 (AUM)</div>
+      <div class="stat-value cyan" id="dashAum">¥0</div>
+      <div class="stat-sub">所有客户持仓市值总和</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">配资总敞口</div>
+      <div class="stat-value" id="dashExposure">¥0</div>
+      <div class="stat-sub">交易所提供的杠杆资金</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">整体杠杆率</div>
+      <div class="stat-value yellow" id="dashLeverage">0.00x</div>
+      <div class="stat-sub">总敞口 / 自有资本</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">日均利息收入</div>
+      <div class="stat-value green" id="dashInterest">¥0</div>
+      <div class="stat-sub">所有配资产品日利息</div>
+    </div>
+  </div>
+
+  <div class="explain-section">
+    <h3>🏦 配资业务总览</h3>
+    <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+      作为交易所/配资方，我们为客户提供杠杆资金。每个杠杆ETF产品的运作机制如下：
+      <strong style="color:var(--text-primary);">客户自有资金 + 交易所配资资金 → 买入标的资产 → 每日重新平衡杠杆比例</strong>。
+      交易所收取<strong style="color:var(--accent-green);">配资利息</strong>作为收入，同时承担客户亏损超过保证金的<strong style="color:var(--accent-red);">风险敞口</strong>。
+    </p>
+  </div>
+
+  <!-- 配资资金流向 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">💸 资金流向示意</div>
+    </div>
+    <div class="card-body">
+      <div class="engine-flow">
+        <div class="engine-step">
+          <div class="step-num">1</div>
+          <div class="step-title">客户入金</div>
+          <div class="step-desc">客户投入自有资金作为保证金</div>
+        </div>
+        <div class="engine-step">
+          <div class="step-num">2</div>
+          <div class="step-title">交易所配资</div>
+          <div class="step-desc">按杠杆倍数提供额外资金</div>
+        </div>
+        <div class="engine-step">
+          <div class="step-num">3</div>
+          <div class="step-title">买入标的资产</div>
+          <div class="step-desc">总资金买入对应股票</div>
+        </div>
+        <div class="engine-step">
+          <div class="step-num">4</div>
+          <div class="step-title">每日重平衡</div>
+          <div class="step-desc">调整仓位维持目标杠杆</div>
+        </div>
+        <div class="engine-step">
+          <div class="step-num">5</div>
+          <div class="step-title">收取利息</div>
+          <div class="step-desc">按配资金额收日利息</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 产品概览 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📦 配资产品概览</div>
+    </div>
+    <div class="card-body">
+      <table class="data-table" id="productOverviewTable">
+        <thead>
+          <tr><th>产品</th><th>杠杆</th><th class="text-right">资金池</th><th class="text-right">已使用</th><th class="text-right">使用率</th><th class="text-right">配资利率(年化)</th><th class="text-right">日利息收入</th></tr>
+        </thead>
+        <tbody id="productOverviewBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Tab 2: 产品管理 ===== -->
+<div class="tab-content" id="tab-products">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">📦 配资产品详情</div>
+      <div style="font-size:11px;color:var(--text-muted);">管理各杠杆ETF产品的资金池</div>
+    </div>
+    <div class="card-body">
+      <div class="products-grid" id="productsGrid"></div>
+    </div>
+  </div>
+
+  <!-- 配资参数设置 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">⚙️ 配资参数设置</div>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">基准利率 (年化)</label>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="baseRateSlider" min="3" max="15" value="6" step="0.5" onchange="updateRateSettings()" style="flex:1;accent-color:var(--accent-cyan);">
+            <span id="baseRateDisplay" style="font-family:var(--font-mono);font-size:14px;color:var(--accent-cyan);">6.0%</span>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">2倍产品加点</label>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="spread2xSlider" min="1" max="8" value="3" step="0.5" onchange="updateRateSettings()" style="flex:1;accent-color:var(--accent-blue);">
+            <span id="spread2xDisplay" style="font-family:var(--font-mono);font-size:14px;color:var(--accent-blue);">+3.0%</span>
+          </div>
+        </div>
+        <div>
+          <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">3倍产品加点</label>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="spread3xSlider" min="2" max="12" value="5" step="0.5" onchange="updateRateSettings()" style="flex:1;accent-color:var(--accent-purple);">
+            <span id="spread3xDisplay" style="font-family:var(--font-mono);font-size:14px;color:var(--accent-purple);">+5.0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Tab 3: 客户管理 ===== -->
+<div class="tab-content" id="tab-clients">
+  <div class="dashboard-grid">
+    <div class="stat-card blue">
+      <div class="stat-label">客户总数</div>
+      <div class="stat-value cyan" id="clientCount">0</div>
+      <div class="stat-sub">活跃交易客户</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">盈利客户</div>
+      <div class="stat-value green" id="clientWinCount">0</div>
+      <div class="stat-sub">浮动盈利客户数</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">亏损客户</div>
+      <div class="stat-value red" id="clientLoseCount">0</div>
+      <div class="stat-sub">浮动亏损客户数</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">需关注客户</div>
+      <div class="stat-value orange" id="clientAlertCount">0</div>
+      <div class="stat-sub">保证金不足70%的客户</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">👥 客户持仓明细</div>
+      <span style="font-size:11px;color:var(--text-muted);">点击客户可查看详细持仓</span>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <table class="data-table" id="clientTable">
+        <thead>
+          <tr><th>客户</th><th>总资产</th><th>自有资金</th><th>配资金额</th><th>持仓市值</th><th>浮动盈亏</th><th>保证金比例</th><th>风险评级</th></tr>
+        </thead>
+        <tbody id="clientTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Tab 4: 风控 ===== -->
+<div class="tab-content" id="tab-risk">
+  <div class="gauge-row">
+    <div class="gauge-box">
+      <div class="gauge-label">整体保证金充足率</div>
+      <div class="gauge-value" id="riskMarginRatio">0%</div>
+      <div class="gauge-bar"><div class="gauge-fill" id="riskMarginBar" style="width:0%;background:var(--accent-green);"></div></div>
+    </div>
+    <div class="gauge-box">
+      <div class="gauge-label">集中度风险 (最大品种占比)</div>
+      <div class="gauge-value" id="riskConcentration">0%</div>
+      <div class="gauge-bar"><div class="gauge-fill" id="riskConcBar" style="width:0%;background:var(--accent-green);"></div></div>
+    </div>
+    <div class="gauge-box">
+      <div class="gauge-label">整体杠杆率</div>
+      <div class="gauge-value" id="riskOverallLev">0x</div>
+      <div class="gauge-bar"><div class="gauge-fill" id="riskLevBar" style="width:0%;background:var(--accent-green);"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🔴 风控警报</div>
+      <span style="font-size:11px;color:var(--text-muted);" id="alertCount">0 条警报</span>
+    </div>
+    <div class="card-body">
+      <div class="alerts-list" id="alertsList">
+        <div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px;">暂无警报</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">🧪 压力测试</div>
+      <span style="font-size:11px;color:var(--text-muted);">模拟极端行情对保证金的影响</span>
+    </div>
+    <div class="card-body">
+      <div class="stress-grid" id="stressGrid">
+        <div class="stress-item" onclick="runStressTest(-5)">
+          <h5>标的跌 -5%</h5>
+          <div class="result" id="stress1">—</div>
+          <div style="font-size:10px;color:var(--text-muted);">保证金影响</div>
+        </div>
+        <div class="stress-item" onclick="runStressTest(-10)">
+          <h5>标的跌 -10%</h5>
+          <div class="result" id="stress2">—</div>
+          <div style="font-size:10px;color:var(--text-muted);">保证金影响</div>
+        </div>
+        <div class="stress-item" onclick="runStressTest(-15)">
+          <h5>标的跌 -15%</h5>
+          <div class="result" id="stress3">—</div>
+          <div style="font-size:10px;color:var(--text-muted);">保证金影响</div>
+        </div>
+        <div class="stress-item" onclick="runStressTest(-20)">
+          <h5>标的跌 -20%</h5>
+          <div class="result" id="stress4">—</div>
+          <div style="font-size:10px;color:var(--text-muted);">保证金影响</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Tab 5: 原理说明 ===== -->
+<div class="tab-content" id="tab-education">
+  <div class="explain-section">
+    <h3>🏛 杠杆ETF = 交易所为客户配资</h3>
+    <p style="font-size:13px;color:var(--text-secondary);line-height:2;">
+      杠杆ETF的本质就是<strong style="color:var(--accent-cyan);">交易所/做市商为客户提供杠杆资金</strong>进行配资交易。让我们来看一个实际的例子：
+    </p>
+    
+    <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;margin:12px 0;">
+      <h4 style="color:var(--accent-yellow);margin-bottom:8px;">📝 案例：客户买入3倍茅台ETF</h4>
+      <table style="width:100%;font-size:13px;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:6px;color:var(--text-secondary);">客户自有资金</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);">¥1,000,000</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:6px;color:var(--text-secondary);">交易所配资 (2倍杠杆)</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-cyan);">+ ¥2,000,000</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:6px;color:var(--text-secondary);">总买入金额</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);font-weight:700;">¥3,000,000</td>
+        </tr>
+        <tr>
+          <td style="padding:6px;color:var(--text-secondary);">实际杠杆倍数</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-purple);font-weight:700;">3倍</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="explain-section">
+    <h3>🔄 每日重置 = 每日重新配资</h3>
+    <p style="font-size:13px;color:var(--text-secondary);line-height:2;">
+      每日重置的实质是：<strong style="color:var(--accent-cyan);">每天收盘后，交易所根据客户最新的资产状况，重新计算配资金额</strong>。
+    </p>
+    <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;margin:12px 0;">
+      <h4 style="color:var(--accent-cyan);margin-bottom:8px;">📊 重置计算过程</h4>
+      <table style="width:100%;font-size:13px;border-collapse:collapse;" id="resetExample">
+        <tr style="border-bottom:1px solid var(--border-subtle);background:rgba(59,130,246,0.05);">
+          <td style="padding:8px;font-weight:600;">场景</td>
+          <td style="padding:8px;text-align:right;font-weight:600;">标的涨+10%</td>
+          <td style="padding:8px;text-align:right;font-weight:600;">标的跌-10%</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:6px;color:var(--text-secondary);">客户资产变化</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-green);">+30% → ¥1,300,000</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-red);">-30% → ¥700,000</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:6px;color:var(--text-secondary);">交易所调整配资</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-cyan);">需追加配资至 ¥2,600,000</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-orange);">需减少配资至 ¥1,400,000</td>
+        </tr>
+        <tr>
+          <td style="padding:6px;color:var(--text-secondary);">总资产（维持3倍）</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);">¥3,900,000</td>
+          <td style="padding:6px;text-align:right;font-family:var(--font-mono);">¥2,100,000</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="explain-section">
+    <h3>⚖️ 交易所的风控策略</h3>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+        <h4 style="color:var(--accent-green);margin-bottom:6px;">🛡 保证金制度</h4>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          • 初始保证金: 客户自有资金的<b style="color:var(--text-primary);">100%</b>作为保证金<br>
+          • 维持保证金: 保证金比例需维持在<b style="color:var(--accent-yellow);">70%</b>以上<br>
+          • 预警线: 保证金比例低于<b style="color:var(--accent-orange);">50%</b>时触发预警<br>
+          • 强平线: 保证金比例低于<b style="color:var(--accent-red);">30%</b>时强制平仓
+        </p>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+        <h4 style="color:var(--accent-orange);margin-bottom:6px;">📊 集中度限制</h4>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          • 单一品种配资不超过总资金池的<b style="color:var(--text-primary);">40%</b><br>
+          • 单一客户配资不超过总资金的<b style="color:var(--text-primary);">20%</b><br>
+          • 高波动品种(3倍)配资系数额外<b style="color:var(--accent-red);">打8折</b><br>
+          • 每日收盘后重新评估集中度风险
+        </p>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+        <h4 style="color:var(--accent-blue);margin-bottom:6px;">📈 波动率风控</h4>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          • 实时监控标的波动率变化<br>
+          • 波动率突升时自动调低杠杆上限<br>
+          • 市场波动率 > 30% 时限制3倍产品开仓<br>
+          • 重大事件时启动熔断保护
+        </p>
+      </div>
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+        <h4 style="color:var(--accent-purple);margin-bottom:6px;">📋 强平机制</h4>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+          • 触发强平线后立即发出强平通知<br>
+          • 优先平掉亏损最大的持仓<br>
+          • 强平后归还交易所配资本金<br>
+          • 剩余资金退还给客户
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="explain-section">
+    <h3>💰 交易所盈利模型</h3>
+    <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+      <table style="width:100%;font-size:13px;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:8px;color:var(--text-secondary);">收入来源</td>
+          <td style="padding:8px;font-weight:600;">配资利息收入</td>
+          <td style="padding:8px;font-size:12px;color:var(--text-muted);">按配资金额 × 年化利率 / 365 每日收取</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:8px;color:var(--text-secondary);">成本</td>
+          <td style="padding:8px;font-weight:600;">资金成本 + 运营成本</td>
+          <td style="padding:8px;font-size:12px;color:var(--text-muted);">交易所自有资金的机会成本或融资成本</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border-subtle);">
+          <td style="padding:8px;color:var(--text-secondary);">主要风险</td>
+          <td style="padding:8px;font-weight:600;color:var(--accent-red);">客户穿仓风险</td>
+          <td style="padding:8px;font-size:12px;color:var(--text-muted);">极端行情下客户亏损超过保证金，交易所需承担损失</td>
+        </tr>
+        <tr>
+          <td style="padding:8px;color:var(--text-secondary);">盈利关键</td>
+          <td style="padding:8px;font-weight:600;color:var(--accent-green);">利差 + 风控</td>
+          <td style="padding:8px;font-size:12px;color:var(--text-muted);">收取的利息 > 资金成本 + 坏账损失，且风控到位避免穿仓</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ===== 客户详情弹窗 ===== -->
+<div class="modal-overlay" id="clientModal">
+  <div class="modal-content">
+    <h3 id="modalTitle" style="margin-bottom:12px;color:var(--accent-cyan);">客户详情</h3>
+    <div id="modalBody"></div>
+    <button class="close-btn" onclick="closeClientModal()">关闭</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 1. 交易所模拟数据
+// ============================================================
+const EXCHANGE = {
+  // 自有资本金
+  equity: 50000000, // 5000万
+  // 利率设置
+  rates: {
+    base: 6.0,      // 基准年化利率 %
+    spread2x: 3.0,  // 2倍产品加点
+    spread3x: 5.0,  // 3倍产品加点
+  },
+  // 风控阈值
+  riskThresholds: {
+    marginWarn: 0.70,    // 保证金预警 70%
+    marginDanger: 0.50,  // 保证金危险 50%
+    marginLiquidate: 0.30, // 强平线 30%
+    concentrationLimit: 0.40, // 集中度上限 40%
+  },
+  // 天数
+  day: 0,
+  totalInterest: 0,
+};
+
+// 标的物（与交易端一致）
+const UNDERLYINGS_ADMIN = [
+  { id: 'mt', name: '茅台', basePrice: 1880, volatility: 0.018 },
+  { id: 'zy', name: '兆易创新', basePrice: 78, volatility: 0.028 },
+  { id: 'nd', name: '宁德时代', basePrice: 245, volatility: 0.025 },
+];
+
+// 价格状态
+const prices = {};
+UNDERLYINGS_ADMIN.forEach(u => {
+  prices[u.id] = { price: u.basePrice, open: u.basePrice, history: [u.basePrice] };
+});
+
+// 模拟客户
+const SIM_CLIENTS = [
+  { id: 'C001', name: '张先生', capital: 1000000, positions: {} },
+  { id: 'C002', name: '李女士', capital: 2000000, positions: {} },
+  { id: 'C003', name: '王总', capital: 500000, positions: {} },
+  { id: 'C004', name: '赵经理', capital: 3000000, positions: {} },
+  { id: 'C005', name: '陈女士', capital: 800000, positions: {} },
+  { id: 'C006', name: '刘先生', capital: 1500000, positions: {} },
+];
+
+// 配资产品
+const PROD_TEMPLATES = [
+  { underlyingId: 'mt', name: '茅台2倍', lev: 2, poolSize: 20000000 },
+  { underlyingId: 'mt', name: '茅台3倍', lev: 3, poolSize: 15000000 },
+  { underlyingId: 'zy', name: '兆易2倍', lev: 2, poolSize: 12000000 },
+  { underlyingId: 'zy', name: '兆易3倍', lev: 3, poolSize: 8000000 },
+  { underlyingId: 'nd', name: '宁德2倍', lev: 2, poolSize: 18000000 },
+  { underlyingId: 'nd', name: '宁德3倍', lev: 3, poolSize: 12000000 },
+];
+
+// ============================================================
+// 2. 初始化客户持仓
+// ============================================================
+function initClientPositions() {
+  const prods = [
+    { id: 'mt_2x', bid: 'mt', lev: 2 },
+    { id: 'mt_3x', bid: 'mt', lev: 3 },
+    { id: 'zy_2x', bid: 'zy', lev: 2 },
+    { id: 'zy_3x', bid: 'zy', lev: 3 },
+    { id: 'nd_2x', bid: 'nd', lev: 2 },
+    { id: 'nd_3x', bid: 'nd', lev: 3 },
+  ];
+  SIM_CLIENTS.forEach((c, idx) => {
+    // 每个客户随机持有1-3个产品
+    const count = 1 + Math.floor(idx % 3);
+    const chosen = [];
+    for (let i = 0; i < count; i++) {
+      const pi = (idx + i * 2) % prods.length;
+      chosen.push(prods[pi]);
+    }
+    chosen.forEach(p => {
+      const underlying = UNDERLYINGS_ADMIN.find(u => u.id === p.bid);
+      // 配资: 客户自有资金中一部分用于此产品
+      const capitalUsed = c.capital * (0.2 + Math.random() * 0.3);
+      // 交易所配资金额 = 客户投入 × (杠杆 - 1)
+      const leverageAmount = capitalUsed * (p.lev - 1);
+      const totalAmount = capitalUsed + leverageAmount;
+      const shares = Math.floor(totalAmount / (underlying ? underlying.basePrice : 100));
+      const price = underlying ? underlying.basePrice : 100;
+      c.positions[p.id] = {
+        underlyingId: p.bid, leverage: p.lev,
+        shares, entryPrice: price,
+        capitalUsed, leverageAmount,
+        totalCost: totalAmount,
+        marketValue: shares * price,
+        pnl: 0, marginRatio: 1.0,
+      };
+    });
+  });
+}
+initClientPositions();
+
+// ============================================================
+// 3. 模拟引擎
+// ============================================================
+function generateDailyReturn(vol) {
+  let u1 = Math.random(), u2 = Math.random();
+  let z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  return z * vol;
+}
+
+function advanceAdminDay() {
+  EXCHANGE.day++;
+  EXCHANGE.totalDayInterest = 0;
+
+  // 更新标的价格
+  UNDERLYINGS_ADMIN.forEach(u => {
+    const ret = generateDailyReturn(u.volatility);
+    prices[u.id].open = prices[u.id].price;
+    prices[u.id].price *= (1 + ret);
+    prices[u.id].history.push(prices[u.id].price);
+  });
+
+  // 更新各客户持仓
+  SIM_CLIENTS.forEach(c => {
+    for (const [pid, pos] of Object.entries(c.positions)) {
+      const underlying = UNDERLYINGS_ADMIN.find(u => u.id === pos.underlyingId);
+      if (!underlying) continue;
+      const priceData = prices[underlying.id];
+      const underlyingReturn = (priceData.price - priceData.open) / priceData.open;
+      // 杠杆ETF涨跌幅
+      const etfReturn = pos.leverage * underlyingReturn;
+
+      // 更新持仓市值
+      pos.marketValue *= (1 + etfReturn);
+      pos.pnl = pos.marketValue - pos.totalCost;
+
+      // 保证金比例 = 客户部分 / 总市值
+      // 客户部分 = 初始投入 + 浮动盈亏
+      const clientEquity = pos.capitalUsed + pos.pnl;
+      pos.marginRatio = pos.marketValue > 0 ? clientEquity / pos.marketValue : 0;
+
+      // 计算该持仓占用的配资金额产生的利息
+      // 利率取决于杠杆倍数
+      const levRate = pos.leverage === 2 ?
+        (EXCHANGE.rates.base + EXCHANGE.rates.spread2x) :
+        (EXCHANGE.rates.base + EXCHANGE.rates.spread3x);
+      const dailyRate = levRate / 100 / 365;
+      const dailyInterest = pos.leverageAmount * dailyRate;
+      pos.dailyInterest = dailyInterest;
+      EXCHANGE.totalDayInterest += dailyInterest;
+    }
+  });
+
+  EXCHANGE.totalInterest += EXCHANGE.totalDayInterest;
+  renderAdmin();
+  showToast(`第 ${EXCHANGE.day} 天完成，日利息收入 ¥${EXCHANGE.totalDayInterest.toFixed(2)}`, 'info');
+}
+
+// ============================================================
+// 4. 渲染
+// ============================================================
+function renderAdmin() {
+  renderDashboard();
+  renderProducts();
+  renderClients();
+  renderRisk();
+  document.getElementById('adminDayCount').textContent = EXCHANGE.day;
+}
+
+function renderDashboard() {
+  const totalExposure = getTotalExposure();
+  const totalAUM = getTotalAUM();
+  const overallLev = EXCHANGE.equity > 0 ? totalExposure / EXCHANGE.equity : 0;
+  const dailyInt = EXCHANGE.totalDayInterest || 0;
+
+  document.getElementById('dashAum').textContent = '¥' + totalAUM.toFixed(0);
+  document.getElementById('dashExposure').textContent = '¥' + totalExposure.toFixed(0);
+  document.getElementById('dashLeverage').textContent = overallLev.toFixed(2) + 'x';
+  document.getElementById('dashInterest').textContent = '¥' + dailyInt.toFixed(2);
+
+  // 产品概览表
+  renderProductOverview();
+}
+
+function getTotalAUM() {
+  let total = 0;
+  SIM_CLIENTS.forEach(c => {
+    for (const [, pos] of Object.entries(c.positions)) {
+      total += pos.marketValue;
+    }
+  });
+  return total;
+}
+
+function getTotalExposure() {
+  let total = 0;
+  SIM_CLIENTS.forEach(c => {
+    for (const [, pos] of Object.entries(c.positions)) {
+      total += pos.leverageAmount;
+    }
+  });
+  return total;
+}
+
+function renderProductOverview() {
+  const tbody = document.getElementById('productOverviewBody');
+  tbody.innerHTML = '';
+  PROD_TEMPLATES.forEach(p => {
+    const underlying = UNDERLYINGS_ADMIN.find(u => u.id === p.underlyingId);
+    const price = underlying ? prices[underlying.id].price : 0;
+
+    // 计算该产品已使用的配资金额
+    let used = 0;
+    SIM_CLIENTS.forEach(c => {
+      for (const [pid, pos] of Object.entries(c.positions)) {
+        const prodId = p.underlyingId + '_' + p.lev + 'x';
+        const posProdId = pos.underlyingId + '_' + pos.leverage + 'x';
+        if (posProdId === prodId) {
+          used += pos.leverageAmount;
+        }
+      }
+    });
+
+    const usage = p.poolSize > 0 ? used / p.poolSize : 0;
+    const levRate = p.lev === 2 ?
+      (EXCHANGE.rates.base + EXCHANGE.rates.spread2x) :
+      (EXCHANGE.rates.base + EXCHANGE.rates.spread3x);
+    const dailyInt = used * (levRate / 100 / 365);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${p.name}</strong></td>
+      <td><span class="tag-lev l${p.lev}">${p.lev}x</span></td>
+      <td class="text-right mono">¥${p.poolSize.toFixed(0)}</td>
+      <td class="text-right mono">¥${used.toFixed(0)}</td>
+      <td class="text-right mono" style="color:${usage > 0.8 ? 'var(--accent-red)' : usage > 0.5 ? 'var(--accent-yellow)' : 'var(--accent-green)'}">${(usage * 100).toFixed(1)}%</td>
+      <td class="text-right mono" style="color:var(--accent-cyan)">${levRate.toFixed(1)}%</td>
+      <td class="text-right mono green">¥${dailyInt.toFixed(2)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = '';
+  PROD_TEMPLATES.forEach(p => {
+    const underlying = UNDERLYINGS_ADMIN.find(u => u.id === p.underlyingId);
+    const price = underlying ? prices[underlying.id].price : 0;
+
+    let used = 0, clientCount = 0;
+    SIM_CLIENTS.forEach(c => {
+      for (const [pid, pos] of Object.entries(c.positions)) {
+        const prodId = p.underlyingId + '_' + p.lev + 'x';
+        const posProdId = pos.underlyingId + '_' + pos.leverage + 'x';
+        if (posProdId === prodId) { used += pos.leverageAmount; clientCount++; }
+      }
+    });
+
+    const usage = p.poolSize > 0 ? used / p.poolSize : 0;
+    const levRate = p.lev === 2 ?
+      (EXCHANGE.rates.base + EXCHANGE.rates.spread2x) :
+      (EXCHANGE.rates.base + EXCHANGE.rates.spread3x);
+    const dailyInt = used * (levRate / 100 / 365);
+    const barClass = usage > 0.8 ? 'critical' : usage > 0.6 ? 'danger' : usage > 0.4 ? 'warn' : 'safe';
+
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <h5>${p.name} <span style="font-size:11px;color:var(--text-muted);">(${underlying ? underlying.symbol || underlying.id.toUpperCase() : ''})</span></h5>
+      <div class="prod-row"><span>资金池总额</span><span class="val">¥${(p.poolSize / 10000).toFixed(0)}万</span></div>
+      <div class="prod-row"><span>已使用配资</span><span class="val">¥${(used / 10000).toFixed(0)}万</span></div>
+      <div class="prod-row"><span>资金使用率</span><span class="val" style="color:${usage > 0.8 ? 'var(--accent-red)' : 'var(--accent-green)'}">${(usage * 100).toFixed(1)}%</span></div>
+      <div class="progress-bar"><div class="progress-fill ${barClass}" style="width:${Math.min(usage * 100, 100)}%"></div></div>
+      <div class="prod-row"><span>客户数量</span><span class="val">${clientCount} 位</span></div>
+      <div class="prod-row"><span>配资利率</span><span class="val" style="color:var(--accent-cyan)">${levRate.toFixed(1)}%/年</span></div>
+      <div class="prod-row"><span>日利息收入</span><span class="val" style="color:var(--accent-green)">¥${dailyInt.toFixed(2)}</span></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderClients() {
+  const tbody = document.getElementById('clientTableBody');
+  tbody.innerHTML = '';
+
+  let winCount = 0, loseCount = 0, alertCount = 0;
+
+  SIM_CLIENTS.forEach(c => {
+    let totalAsset = c.capital;
+    let totalExposure = 0;
+    let totalPnl = 0;
+    let minMargin = 1;
+
+    for (const [, pos] of Object.entries(c.positions)) {
+      totalAsset += pos.marketValue - pos.capitalUsed;
+      totalExposure += pos.leverageAmount;
+      totalPnl += pos.pnl;
+      if (pos.marginRatio < minMargin) minMargin = pos.marginRatio;
+    }
+
+    if (totalPnl > 0) winCount++;
+    else if (totalPnl < 0) loseCount++;
+
+    const marginRatio = (c.capital + totalPnl) / (c.capital + totalExposure);
+    const marginPct = marginRatio * 100;
+    if (marginRatio < 0.7) alertCount++;
+
+    let riskClass = 'risk-low';
+    let riskLabel = '安全';
+    if (marginRatio < 0.3) { riskClass = 'risk-danger'; riskLabel = '⚠ 危险'; }
+    else if (marginRatio < 0.5) { riskClass = 'risk-high'; riskLabel = '⚠ 高风险'; }
+    else if (marginRatio < 0.7) { riskClass = 'risk-mid'; riskLabel = '⚠ 关注'; }
+
+    const tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.onclick = () => showClientDetail(c.id);
+    tr.innerHTML = `
+      <td><strong>${c.name}</strong><br><span style="font-size:11px;color:var(--text-muted)">${c.id}</span></td>
+      <td class="mono">¥${(c.capital + totalPnl).toFixed(0)}</td>
+      <td class="mono">¥${c.capital.toFixed(0)}</td>
+      <td class="mono" style="color:var(--accent-cyan)">¥${totalExposure.toFixed(0)}</td>
+      <td class="mono">¥${(totalAsset).toFixed(0)}</td>
+      <td class="mono ${totalPnl >= 0 ? 'up' : 'down'}">${totalPnl >= 0 ? '+' : ''}¥${totalPnl.toFixed(0)}</td>
+      <td class="mono" style="color:${marginRatio > 0.7 ? 'var(--accent-green)' : marginRatio > 0.5 ? 'var(--accent-yellow)' : 'var(--accent-red)'}">${marginPct.toFixed(1)}%</td>
+      <td><span class="risk-tag ${riskClass}">${riskLabel}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('clientCount').textContent = SIM_CLIENTS.length;
+  document.getElementById('clientWinCount').textContent = winCount;
+  document.getElementById('clientLoseCount').textContent = loseCount;
+  document.getElementById('clientAlertCount').textContent = alertCount;
+}
+
+function renderRisk() {
+  // 整体保证金充足率
+  let totalCapital = 0, totalExposure = 0;
+  SIM_CLIENTS.forEach(c => {
+    totalCapital += c.capital;
+    for (const [, pos] of Object.entries(c.positions)) {
+      totalExposure += pos.leverageAmount;
+    }
+  });
+  const marginRatio = totalExposure > 0 ? totalCapital / totalExposure : 1;
+  // 调整：保证金充足率 = 总客户自有 / (总客户自有 + 总配资)
+  const totalClientEquity = SIM_CLIENTS.reduce((s, c) => {
+    let pnl = 0;
+    for (const [, pos] of Object.entries(c.positions)) pnl += pos.pnl;
+    return s + c.capital + pnl;
+  }, 0);
+  const totalMarketVal = SIM_CLIENTS.reduce((s, c) => {
+    let mv = 0;
+    for (const [, pos] of Object.entries(c.positions)) mv += pos.marketValue;
+    return s + mv;
+  }, 0);
+  const marginRatio2 = totalMarketVal > 0 ? totalClientEquity / totalMarketVal : 1;
+  const marginPct = Math.min(marginRatio2 * 100, 100);
+
+  document.getElementById('riskMarginRatio').textContent = marginPct.toFixed(1) + '%';
+  document.getElementById('riskMarginRatio').className = 'gauge-value ' + (marginPct > 70 ? 'level-safe' : marginPct > 50 ? 'level-warn' : 'level-danger');
+  const marginBar = document.getElementById('riskMarginBar');
+  marginBar.style.width = marginPct + '%';
+  marginBar.style.background = marginPct > 70 ? 'var(--accent-green)' : marginPct > 50 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+
+  // 集中度 - 最大品种占比
+  let maxProductVal = 0, totalVal = 1;
+  const prodMap = {};
+  SIM_CLIENTS.forEach(c => {
+    for (const [pid, pos] of Object.entries(c.positions)) {
+      prodMap[pid] = (prodMap[pid] || 0) + pos.marketValue;
+      totalVal += pos.marketValue;
+    }
+  });
+  for (const v of Object.values(prodMap)) {
+    if (v > maxProductVal) maxProductVal = v;
+  }
+  const concPct = totalVal > 0 ? (maxProductVal / totalVal * 100) : 0;
+  document.getElementById('riskConcentration').textContent = concPct.toFixed(1) + '%';
+  document.getElementById('riskConcentration').className = 'gauge-value ' + (concPct < 30 ? 'level-safe' : concPct < 50 ? 'level-warn' : 'level-danger');
+  const concBar = document.getElementById('riskConcBar');
+  concBar.style.width = Math.min(concPct, 100) + '%';
+  concBar.style.background = concPct < 30 ? 'var(--accent-green)' : concPct < 50 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+
+  // 整体杠杆率
+  const overallLev = EXCHANGE.equity > 0 ? totalExposure / EXCHANGE.equity : 0;
+  document.getElementById('riskOverallLev').textContent = overallLev.toFixed(2) + 'x';
+  document.getElementById('riskOverallLev').className = 'gauge-value ' + (overallLev < 3 ? 'level-safe' : overallLev < 5 ? 'level-warn' : 'level-danger');
+  const levBar = document.getElementById('riskLevBar');
+  const levPct = Math.min(overallLev / 8 * 100, 100);
+  levBar.style.width = levPct + '%';
+  levBar.style.background = overallLev < 3 ? 'var(--accent-green)' : overallLev < 5 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+
+  // 生成警报
+  generateAlerts(totalMarketVal, totalClientEquity, marginRatio2);
+}
+
+function generateAlerts(totalMV, totalEQ, marginRatio) {
+  const alerts = [];
+  SIM_CLIENTS.forEach(c => {
+    let pnl = 0, posCount = 0;
+    for (const [, pos] of Object.entries(c.positions)) {
+      pnl += pos.pnl;
+      posCount++;
+    }
+    const clientEquity = c.capital + pnl;
+    const margin = clientEquity / (c.capital + pnl + getClientExposure(c.id));
+
+    if (margin < 0.3) {
+      alerts.push({ level: 'danger', icon: '🚨', text: `${c.name} 触发强平线！保证金比例 ${(margin*100).toFixed(1)}%，需立即处理` });
+    } else if (margin < 0.5) {
+      alerts.push({ level: 'warning', icon: '⚠️', text: `${c.name} 保证金不足，当前 ${(margin*100).toFixed(1)}%，建议追加保证金或减仓` });
+    } else if (margin < 0.7) {
+      alerts.push({ level: 'info', icon: 'ℹ️', text: `${c.name} 保证金比例 ${(margin*100).toFixed(1)}%，已进入关注名单` });
+    }
+  });
+
+  if (totalMV > 0 && marginRatio < 0.5) {
+    alerts.push({ level: 'danger', icon: '🚨', text: '整体保证金充足率过低，建议收紧配资额度或提高保证金要求' });
+  }
+
+  document.getElementById('alertCount').textContent = alerts.length + ' 条警报';
+  const container = document.getElementById('alertsList');
+  if (alerts.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px;">✅ 一切正常，暂无警报</div>';
+    return;
+  }
+  container.innerHTML = '';
+  alerts.forEach(a => {
+    const div = document.createElement('div');
+    div.className = 'alert-item ' + (a.level === 'danger' ? 'danger' : a.level === 'warning' ? 'warning' : 'info');
+    div.innerHTML = `<span class="alert-icon">${a.icon}</span><span class="alert-text">${a.text}</span><span class="alert-time">第${EXCHANGE.day}天</span>`;
+    container.appendChild(div);
+  });
+}
+
+function getClientExposure(clientId) {
+  const c = SIM_CLIENTS.find(cl => cl.id === clientId);
+  if (!c) return 0;
+  let exp = 0;
+  for (const [, pos] of Object.entries(c.positions)) exp += pos.leverageAmount;
+  return exp;
+}
+
+function showClientDetail(clientId) {
+  const c = SIM_CLIENTS.find(cl => cl.id === clientId);
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = c.name + ' - 持仓详情 (' + c.id + ')';
+  const body = document.getElementById('modalBody');
+  let html = `<p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">自有资金: <strong style="color:var(--text-primary);font-family:var(--font-mono);">¥${c.capital.toFixed(0)}</strong></p>`;
+  html += '<table class="data-table"><thead><tr><th>产品</th><th>杠杆</th><th class="text-right">份额</th><th class="text-right">持仓市值</th><th class="text-right">自有投入</th><th class="text-right">配资金额</th><th class="text-right">浮动盈亏</th><th class="text-right">保证金</th></tr></thead><tbody>';
+  for (const [, pos] of Object.entries(c.positions)) {
+    const pnlClass = pos.pnl >= 0 ? 'up' : 'down';
+    const marginPct = (pos.marginRatio * 100).toFixed(1);
+    const marginColor = pos.marginRatio > 0.7 ? 'var(--accent-green)' : pos.marginRatio > 0.5 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+    html += `<tr>
+      <td>${pos.underlyingId.toUpperCase()}</td>
+      <td>${pos.leverage}x</td>
+      <td class="text-right mono">${pos.shares}</td>
+      <td class="text-right mono">¥${pos.marketValue.toFixed(0)}</td>
+      <td class="text-right mono">¥${pos.capitalUsed.toFixed(0)}</td>
+      <td class="text-right mono" style="color:var(--accent-cyan)">¥${pos.leverageAmount.toFixed(0)}</td>
+      <td class="text-right mono ${pnlClass}">${pos.pnl >= 0 ? '+' : ''}¥${pos.pnl.toFixed(0)}</td>
+      <td class="text-right mono" style="color:${marginColor}">${marginPct}%</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  body.innerHTML = html;
+  document.getElementById('clientModal').classList.add('show');
+}
+
+function closeClientModal() {
+  document.getElementById('clientModal').classList.remove('show');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+}
+
+function updateRateSettings() {
+  EXCHANGE.rates.base = parseFloat(document.getElementById('baseRateSlider').value);
+  EXCHANGE.rates.spread2x = parseFloat(document.getElementById('spread2xSlider').value);
+  EXCHANGE.rates.spread3x = parseFloat(document.getElementById('spread3xSlider').value);
+  document.getElementById('baseRateDisplay').textContent = EXCHANGE.rates.base.toFixed(1) + '%';
+  document.getElementById('spread2xDisplay').textContent = '+' + EXCHANGE.rates.spread2x.toFixed(1) + '%';
+  document.getElementById('spread3xDisplay').textContent = '+' + EXCHANGE.rates.spread3x.toFixed(1) + '%';
+  renderAdmin();
+  showToast('利率已更新', 'info');
+}
+
+function runStressTest(pctDrop) {
+  const idx = [-5, -10, -15, -20].indexOf(pctDrop);
+  if (idx < 0) return;
+  const el = document.getElementById('stress' + (idx + 1));
+
+  // 模拟单日暴跌对所有客户保证金的影响
+  let totalClientEquity = 0, totalMarketVal = 0;
+  SIM_CLIENTS.forEach(c => {
+    let cEquity = c.capital;
+    for (const [, pos] of Object.entries(c.positions)) {
+      // 标的下跌 pctDrop%, 杠杆ETF下跌 pctDrop * leverage %
+      const drop = pctDrop / 100 * pos.leverage;
+      const newMV = pos.marketValue * (1 + drop);
+      cEquity += (newMV - pos.totalCost);
+      totalMarketVal += newMV;
+    }
+    totalClientEquity += cEquity;
+  });
+
+  const newMargin = totalMarketVal > 0 ? totalClientEquity / totalMarketVal : 0;
+  const marginPct = (newMargin * 100);
+  let color = 'var(--accent-green)';
+  if (marginPct < 30) color = 'var(--accent-red)';
+  else if (marginPct < 50) color = 'var(--accent-orange)';
+  else if (marginPct < 70) color = 'var(--accent-yellow)';
+  el.style.color = color;
+  el.textContent = marginPct.toFixed(1) + '%';
+  showToast(`压力测试: 标的跌${Math.abs(pctDrop)}%，整体保证金充足率降至 ${marginPct.toFixed(1)}%`, 'info');
+}
+
+let adminAutoTimer = null;
+function startAdminAuto() {
+  const btn = document.getElementById('adminAutoBtn');
+  if (adminAutoTimer) {
+    clearInterval(adminAutoTimer);
+    adminAutoTimer = null;
+    btn.textContent = '▶ 自动';
+    return;
+  }
+  btn.textContent = '⏹ 停止';
+  adminAutoTimer = setInterval(() => {
+    advanceAdminDay();
+    if (EXCHANGE.day >= 500) {
+      clearInterval(adminAutoTimer);
+      adminAutoTimer = null;
+      document.getElementById('adminAutoBtn').textContent = '▶ 自动';
+      showToast('模拟达到500天上限', 'info');
+    }
+  }, 1000);
+}
+
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// 初始渲染
+renderAdmin();
+</script>
+</body>
+</html>
