@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>杠杆ETF模拟交易平台</title>
+<style>
+/* ===== 全局变量 & Reset ===== */
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2332;
+  --bg-card-hover: #1e293b;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-yellow: #eab308;
+  --accent-purple: #a855f7;
+  --border-color: #1e3a5f;
+  --border-subtle: #1e293b;
+  --shadow-glow: 0 0 20px rgba(59,130,246,0.1);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font-mono: 'Consolas','Courier New',monospace;
+  --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
+
+/* ===== 顶部导航 ===== */
+.header {
+  background: linear-gradient(135deg, #0f1729 0%, #1a2332 100%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 16px; }
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-badge {
+  font-size: 10px;
+  background: rgba(6,182,212,0.15);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(6,182,212,0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.header-right { display: flex; align-items: center; gap: 24px; }
+.header-stat {
+  text-align: right;
+}
+.header-stat-label { font-size: 11px; color: var(--text-muted); }
+.header-stat-value { font-size: 16px; font-weight: 700; }
+.header-stat-value.positive { color: var(--accent-green); }
+.header-stat-value.negative { color: var(--accent-red); }
+.control-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all .2s;
+}
+.control-btn:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.1); }
+.control-btn.primary {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+}
+.control-btn.primary:hover { opacity: .9; transform: translateY(-1px); box-shadow: var(--shadow-glow); }
+
+/* ===== 主体 Grid ===== */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+/* ===== 卡片通用 ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title .icon { font-size: 14px; }
+.card-body { padding: 12px 16px; }
+
+/* ===== 市场行情 ===== */
+.market-table { width: 100%; border-collapse: collapse; }
+.market-table th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.market-table td {
+  padding: 8px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(30,41,59,0.5);
+}
+.market-table tr:hover td { background: rgba(59,130,246,0.04); }
+.market-table .symbol-name { font-weight: 600; }
+.market-table .symbol-sub { font-size: 11px; color: var(--text-muted); }
+.market-table .price { font-family: var(--font-mono); text-align: right; }
+.market-table .change { font-family: var(--font-mono); text-align: right; font-weight: 600; }
+.change.up { color: var(--accent-green); }
+.change.down { color: var(--accent-red); }
+.tag-leverage {
+  display: inline-block;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.tag-leverage.l2 { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+.tag-leverage.l3 { background: rgba(168,85,247,0.15); color: var(--accent-purple); }
+.tag-leverage.l1 { background: rgba(34,197,94,0.15); color: var(--accent-green); }
+
+/* ===== 交易面板 ===== */
+.trade-form { display: flex; flex-direction: column; gap: 10px; }
+.form-row { display: flex; gap: 8px; align-items: center; }
+.form-row label { font-size: 12px; color: var(--text-secondary); min-width: 50px; }
+.form-row select, .form-row input {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  outline: none;
+}
+.form-row select:focus, .form-row input:focus { border-color: var(--accent-blue); }
+.trade-type-group {
+  display: flex;
+  gap: 0;
+}
+.trade-type-btn {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all .2s;
+}
+.trade-type-btn:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.trade-type-btn:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+.trade-type-btn.active.buy { background: rgba(34,197,94,0.15); border-color: var(--accent-green); color: var(--accent-green); }
+.trade-type-btn.active.sell { background: rgba(239,68,68,0.15); border-color: var(--accent-red); color: var(--accent-red); }
+.trade-summary {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.trade-summary .hl { color: var(--text-primary); font-weight: 600; }
+.trade-summary .hl.up { color: var(--accent-green); }
+.trade-summary .hl.down { color: var(--accent-red); }
+.btn-trade {
+  padding: 10px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-trade.buy { background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; }
+.btn-trade.sell { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; }
+.btn-trade:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+.btn-trade:disabled { opacity: .4; cursor: not-allowed; transform: none !important; }
+
+/* ===== 持仓面板 ===== */
+.portfolio-summary {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.port-item {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 10px;
+  text-align: center;
+}
+.port-item .value { font-size: 16px; font-weight: 700; font-family: var(--font-mono); }
+.port-item .label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.port-item .value.up { color: var(--accent-green); }
+.port-item .value.down { color: var(--accent-red); }
+.position-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+}
+.position-row:last-child { border-bottom: none; }
+.position-info { display: flex; flex-direction: column; }
+.position-name { font-weight: 600; }
+.position-detail { font-size: 11px; color: var(--text-muted); }
+.position-pnl { text-align: right; font-family: var(--font-mono); }
+.position-pnl .amount { font-weight: 700; }
+.position-pnl .pct { font-size: 11px; }
+.empty-state {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ===== 图表容器 ===== */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+.chart-controls {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.chart-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 11px;
+  border-radius: 4px;
+  transition: all .2s;
+}
+.chart-btn.active { background: rgba(59,130,246,0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
+.chart-btn:hover { border-color: var(--accent-blue); }
+
+/* ===== 交易记录 ===== */
+.trade-log {
+  max-height: 200px;
+  overflow-y: auto;
+}
+.log-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px;
+}
+.log-item:last-child { border-bottom: none; }
+.log-type {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.log-type.buy { background: rgba(34,197,94,0.15); color: var(--accent-green); }
+.log-type.sell { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+.log-symbol { font-weight: 600; }
+.log-price { font-family: var(--font-mono); color: var(--text-secondary); }
+.log-time { color: var(--text-muted); font-size: 11px; }
+
+/* ===== 机制说明 ===== */
+.education {
+  grid-column: 1 / -1;
+  max-width: 1440px;
+  margin: 0 auto 16px;
+  padding: 0 16px;
+}
+.edu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.edu-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+.edu-card .icon {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+.edu-card h4 {
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: var(--accent-cyan);
+}
+.edu-card p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.edu-card .demo-link {
+  cursor: pointer;
+  color: var(--accent-blue);
+  font-size: 12px;
+  margin-top: 6px;
+  display: inline-block;
+}
+.edu-card .demo-link:hover { text-decoration: underline; }
+
+/* ===== 通知弹窗 ===== */
+.toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 200;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all .3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(0); }
+.toast.success { background: rgba(34,197,94,0.2); border: 1px solid var(--accent-green); color: var(--accent-green); }
+.toast.error { background: rgba(239,68,68,0.2); border: 1px solid var(--accent-red); color: var(--accent-red); }
+.toast.info { background: rgba(59,130,246,0.2); border: 1px solid var(--accent-blue); color: var(--accent-blue); }
+
+/* ===== 全屏覆盖（展示波动损耗动画） ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+}
+.modal-content h3 { margin-bottom: 12px; color: var(--accent-cyan); }
+.modal-content p { font-size: 13px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 8px; }
+.modal-content .close-btn {
+  margin-top: 16px;
+  padding: 8px 24px;
+  background: var(--accent-blue);
+  border: none;
+  color: #fff;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 900px) {
+  .main-grid { grid-template-columns: 1fr; }
+  .edu-grid { grid-template-columns: 1fr 1fr; }
+  .portfolio-summary { grid-template-columns: repeat(2,1fr); }
+  .header { flex-direction: column; gap: 8px; }
+  .header-right { width: 100%; justify-content: space-between; }
+}
+@media (max-width: 600px) {
+  .edu-grid { grid-template-columns: 1fr; }
+  .main-grid { padding: 8px; gap: 8px; }
+}
+
+/* ===== 刷新指示器 ===== */
+.tick-indicator {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tick-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; }
+  50% { opacity: .3; }
+}
+
+/* ===== 对比提示 ===== */
+.comparison-box {
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+.comparison-box strong { color: var(--text-primary); }
+</style>
+</head>
+<body>
+
+<!-- ===== 通知容器 ===== -->
+<div id="toast" class="toast"></div>
+
+<!-- ===== 顶部导航 ===== -->
+<header class="header">
+  <div class="header-left">
+    <span class="logo">⚡ 杠杆ETF模拟交易</span>
+    <span class="logo-badge">SIM v1.0</span>
+    <span class="tick-indicator"><span class="tick-dot"></span>实时模拟</span>
+  </div>
+  <div class="header-right">
+    <div class="header-stat">
+      <div class="header-stat-label">账户总资产</div>
+      <div class="header-stat-value" id="totalAssetDisplay">¥1,000,000</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-label">总收益率</div>
+      <div class="header-stat-value" id="totalReturnDisplay">+0.00%</div>
+    </div>
+    <button class="control-btn primary" onclick="advanceTime()">▶ 推进一天</button>
+    <button class="control-btn" onclick="startAutoRun()" id="autoBtn">▶ 自动运行</button>
+    <button class="control-btn" onclick="resetAll()">↺ 重置</button>
+    <a href="exchange_admin.html" target="_blank" style="font-size:12px;color:var(--accent-yellow);text-decoration:none;background:var(--bg-card);border:1px solid var(--border-color);padding:6px 14px;border-radius:var(--radius);">⚙ 管理端</a>
+  </div>
+</header>
+
+<!-- ===== 主Grid ===== -->
+<div class="main-grid">
+
+  <!-- 市场行情 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">📊</span> 市场行情</div>
+      <span style="font-size:11px;color:var(--text-muted);">模拟第 <span id="dayCount">0</span> 天</span>
+    </div>
+    <div class="card-body" style="padding:0;">
+      <table class="market-table" id="marketTable">
+        <thead>
+          <tr><th>品种</th><th>杠杆</th><th style="text-align:right;">价格</th><th style="text-align:right;">涨跌幅</th></tr>
+        </thead>
+        <tbody id="marketBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 交易面板 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">💹</span> 模拟交易</div>
+    </div>
+    <div class="card-body">
+      <div class="trade-form">
+        <div class="form-row">
+          <label>品种</label>
+          <select id="tradeSymbol"></select>
+        </div>
+        <div class="form-row">
+          <label>方向</label>
+          <div class="trade-type-group">
+            <button class="trade-type-btn buy active" data-type="buy" onclick="setTradeType('buy')">买入</button>
+            <button class="trade-type-btn sell" data-type="sell" onclick="setTradeType('sell')">卖出</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label>数量</label>
+          <input type="number" id="tradeQty" value="1" min="1" step="1">
+        </div>
+        <div class="trade-summary" id="tradeSummary">
+          当前选择: <span class="hl" id="summarySymbol">—</span><br>
+          方向: <span class="hl" id="summaryDirection" style="color:var(--accent-green);">买入</span><br>
+          数量: <span class="hl" id="summaryQty">0</span> 份 &nbsp;|&nbsp; 参考成本: <span class="hl" id="summaryCost">¥0.00</span><br>
+          可用资金: <span class="hl" id="summaryCash">¥1,000,000</span>
+        </div>
+        <button class="btn-trade buy" id="btnTrade" onclick="executeTrade()">买入</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 持仓面板 -->
+  <div class="card" style="grid-column:1/2;">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">📁</span> 持仓管理</div>
+    </div>
+    <div class="card-body">
+      <div class="portfolio-summary">
+        <div class="port-item">
+          <div class="value" id="portCash">¥1,000,000</div>
+          <div class="label">可用资金</div>
+        </div>
+        <div class="port-item">
+          <div class="value" id="portHoldings">¥0</div>
+          <div class="label">持仓市值</div>
+        </div>
+        <div class="port-item">
+          <div class="value" id="portTotal">¥1,000,000</div>
+          <div class="label">总资产</div>
+        </div>
+        <div class="port-item">
+          <div class="value" id="portPnl">¥0</div>
+          <div class="label">浮动盈亏</div>
+        </div>
+      </div>
+      <div id="positionList"></div>
+    </div>
+  </div>
+
+  <!-- 交易记录 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">📋</span> 交易记录</div>
+      <span style="font-size:11px;color:var(--text-muted);" id="tradeCountLabel">共 0 笔</span>
+    </div>
+    <div class="card-body">
+      <div class="trade-log" id="tradeLog"></div>
+    </div>
+  </div>
+
+  <!-- 业绩图表 -->
+  <div class="card" style="grid-column:1/-1;">
+    <div class="card-header">
+      <div class="card-title"><span class="icon">📈</span> 业绩走势</div>
+      <div class="chart-controls">
+        <button class="chart-btn active" data-period="all" onclick="setChartPeriod('all')">全部</button>
+        <button class="chart-btn" data-period="50" onclick="setChartPeriod('50')">近50天</button>
+        <button class="chart-btn" data-period="20" onclick="setChartPeriod('20')">近20天</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="chart-container">
+        <canvas id="mainChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 机制教育 ===== -->
+<div class="education">
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="icon">⚡</div>
+      <h4>每日重置机制</h4>
+      <p>杠杆ETF每个交易日结束时重置杠杆比例。如果标的日涨3%，3倍ETF涨9%；次日标的跌3%，3倍ETF跌9%。两日累积：标的-0.09%，3倍ETF -0.81%，差异来自重置效应。</p>
+      <span class="demo-link" onclick="showModal('dailyReset')">▶ 查看计算示例</span>
+    </div>
+    <div class="edu-card">
+      <div class="icon">🌀</div>
+      <h4>波动损耗</h4>
+      <p>在震荡市中，杠杆ETF会因每日重置而产生"波动损耗"。例如标的先涨10%再跌10%，3倍ETF约亏损9.1%，而标的本身仅亏损1%。波动越大，损耗越明显。</p>
+      <span class="demo-link" onclick="showModal('volatilityDecay')">▶ 查看计算示例</span>
+    </div>
+    <div class="edu-card">
+      <div class="icon">📐</div>
+      <h4>复利效应</h4>
+      <p>杠杆ETF追求的是<strong>日收益率</strong>的倍数，而非区间收益的倍数。在趋势市中杠杆效果显著，在震荡市中损耗明显。长期持有的收益 = 标的收益 × 杠杆 × 波动损耗因子。</p>
+    </div>
+    <div class="edu-card">
+      <div class="icon">⚠️</div>
+      <h4>风险提示</h4>
+      <p>杠杆ETF不适合长期持有！由于每日重置和波动损耗，长期持有成本极高。更适合短线交易或趋势跟踪策略。本模拟旨在帮助你理解这些机制，不构成投资建议。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 弹窗 ===== -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle">示例</h3>
+    <div id="modalBody"></div>
+    <button class="close-btn" onclick="closeModal()">关闭</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 1. 数据定义
+// ============================================================
+const UNDERLYINGS = [
+  { id: 'mt', name: '茅台', symbol: '600519.SH', basePrice: 1880, volatility: 0.018 },
+  { id: 'zy', name: '兆易创新', symbol: '603986.SH', basePrice: 78, volatility: 0.028 },
+  { id: 'nd', name: '宁德时代', symbol: '300750.SZ', basePrice: 245, volatility: 0.025 },
+];
+
+const ETFs = [];
+UNDERLYINGS.forEach(u => {
+  ETFs.push({
+    id: u.id + '_2x', name: u.name + ' 2x', fullName: u.name + '杠杆2倍',
+    underlyingId: u.id, leverage: 2, isUnderlying: false,
+    priceHistory: [], currentPrice: u.basePrice, openPrice: u.basePrice
+  });
+  ETFs.push({
+    id: u.id + '_3x', name: u.name + ' 3x', fullName: u.name + '杠杆3倍',
+    underlyingId: u.id, leverage: 3, isUnderlying: false,
+    priceHistory: [], currentPrice: u.basePrice, openPrice: u.basePrice
+  });
+  ETFs.push({
+    id: u.id + '_1x', name: u.name, fullName: u.name + '(标的)',
+    underlyingId: u.id, leverage: 1, isUnderlying: true,
+    priceHistory: [], currentPrice: u.basePrice, openPrice: u.basePrice
+  });
+});
+
+// 状态
+const state = {
+  day: 0,
+  cash: 1000000,
+  positions: {}, // { etfId: { shares, totalCost } }
+  trades: [],
+  navHistory: [], // [{day, total, cash, holdings}]
+  priceHistory: {}, // { etfId: [price, ...] }
+  isRunning: false,
+  autoTimer: null,
+  chartPeriod: 'all',
+  tradeType: 'buy',
+};
+
+// 每个品种的初始价格记录
+ETFs.forEach(e => {
+  state.priceHistory[e.id] = [e.basePrice];
+});
+
+// ============================================================
+// 2. 模拟引擎
+// ============================================================
+function generateDailyReturn(vol) {
+  // 使用 Box-Muller 变换生成正态分布随机数
+  let u1 = Math.random(), u2 = Math.random();
+  let z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  return z * vol;
+}
+
+function advanceTime() {
+  state.day++;
+
+  // 1) 更新标的物价格
+  UNDERLYINGS.forEach(u => {
+    const ret = generateDailyReturn(u.volatility);
+    // 对应的1x品种
+    const underlyingETF = ETFs.find(e => e.underlyingId === u.id && e.isUnderlying);
+    if (underlyingETF) {
+      underlyingETF.openPrice = underlyingETF.currentPrice;
+      underlyingETF.currentPrice *= (1 + ret);
+      underlyingETF.priceHistory.push(underlyingETF.currentPrice);
+      state.priceHistory[underlyingETF.id].push(underlyingETF.currentPrice);
+    }
+  });
+
+  // 2) 更新杠杆ETF价格 (每日重置模型)
+  ETFs.filter(e => !e.isUnderlying).forEach(e => {
+    const underlying = UNDERLYINGS.find(u => u.id === e.underlyingId);
+    const underlyingETF = ETFs.find(et => et.underlyingId === e.underlyingId && et.isUnderlying);
+    if (!underlying || !underlyingETF) return;
+
+    // 计算标的今日收益率 (基于openPrice)
+    const underlyingReturn = (underlyingETF.currentPrice - underlyingETF.openPrice) / underlyingETF.openPrice;
+    // 杠杆ETF当日涨跌幅 = 杠杆倍数 × 标的涨跌幅
+    const etfReturn = e.leverage * underlyingReturn;
+    e.openPrice = e.currentPrice;
+    e.currentPrice *= (1 + etfReturn);
+    e.priceHistory.push(e.currentPrice);
+    state.priceHistory[e.id].push(e.currentPrice);
+  });
+
+  // 3) 更新持仓市值 & 计算浮动盈亏
+  updatePortfolioValuation();
+
+  // 4) 记录净资产历史
+  state.navHistory.push({
+    day: state.day,
+    total: getTotalAsset(),
+    cash: state.cash,
+    holdings: getHoldingsValue()
+  });
+
+  // 5) 刷新UI
+  renderAll();
+}
+
+// ============================================================
+// 3. 组合估值
+// ============================================================
+function getEtfPrice(etfId) {
+  const etf = ETFs.find(e => e.id === etfId);
+  return etf ? etf.currentPrice : 0;
+}
+
+function getHoldingsValue() {
+  let total = 0;
+  for (const [etfId, pos] of Object.entries(state.positions)) {
+    total += pos.shares * getEtfPrice(etfId);
+  }
+  return total;
+}
+
+function getTotalAsset() {
+  return state.cash + getHoldingsValue();
+}
+
+function updatePortfolioValuation() {
+  // 更新每个持仓的盈亏
+  for (const [etfId, pos] of Object.entries(state.positions)) {
+    const price = getEtfPrice(etfId);
+    pos.marketValue = pos.shares * price;
+    pos.pnl = pos.marketValue - pos.totalCost;
+    pos.pnlPct = pos.totalCost > 0 ? (pos.pnl / pos.totalCost * 100) : 0;
+  }
+}
+
+// ============================================================
+// 4. 交易系统
+// ============================================================
+function setTradeType(type) {
+  state.tradeType = type;
+  document.querySelectorAll('.trade-type-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.trade-type-btn.${type}`).classList.add('active');
+  updateTradeSummary();
+}
+
+function updateTradeSummary() {
+  const sel = document.getElementById('tradeSymbol');
+  const etf = ETFs.find(e => e.id === sel.value);
+  const qty = parseInt(document.getElementById('tradeQty').value) || 0;
+  const isBuy = state.tradeType === 'buy';
+  const price = etf ? etf.currentPrice : 0;
+  const cost = price * qty;
+
+  document.getElementById('summarySymbol').textContent = etf ? etf.fullName : '—';
+  document.getElementById('summaryDirection').textContent = isBuy ? '买入' : '卖出';
+  document.getElementById('summaryDirection').style.color = isBuy ? 'var(--accent-green)' : 'var(--accent-red)';
+  document.getElementById('summaryQty').textContent = qty;
+  document.getElementById('summaryCost').textContent = '¥' + cost.toFixed(2);
+
+  // 可用资金考虑
+  if (isBuy) {
+    document.getElementById('summaryCash').textContent = '¥' + (state.cash - cost).toFixed(2);
+    document.getElementById('summaryCash').style.color = state.cash >= cost ? 'var(--accent-green)' : 'var(--accent-red)';
+  } else {
+    document.getElementById('summaryCash').textContent = '¥' + state.cash.toFixed(2);
+    document.getElementById('summaryCash').style.color = 'var(--accent-cyan)';
+  }
+
+  const btn = document.getElementById('btnTrade');
+  btn.textContent = isBuy ? '买入' : '卖出';
+  btn.className = 'btn-trade ' + (isBuy ? 'buy' : 'sell');
+}
+
+function executeTrade() {
+  const etfId = document.getElementById('tradeSymbol').value;
+  const qty = parseInt(document.getElementById('tradeQty').value) || 0;
+  const etf = ETFs.find(e => e.id === etfId);
+  if (!etf || qty <= 0) { showToast('请输入有效的数量和品种', 'error'); return; }
+
+  const price = etf.currentPrice;
+  const total = price * qty;
+  const isBuy = state.tradeType === 'buy';
+
+  if (isBuy) {
+    if (total > state.cash) { showToast('可用资金不足!', 'error'); return; }
+    state.cash -= total;
+    if (!state.positions[etfId]) {
+      state.positions[etfId] = { shares: 0, totalCost: 0 };
+    }
+    const pos = state.positions[etfId];
+    // 加权平均成本
+    pos.totalCost += total;
+    pos.shares += qty;
+    pos.marketValue = pos.shares * price;
+    pos.pnl = pos.marketValue - pos.totalCost;
+    pos.pnlPct = pos.totalCost > 0 ? (pos.pnl / pos.totalCost * 100) : 0;
+    showToast(`买入 ${qty} 份 ${etf.fullName}，成交价 ¥${price.toFixed(2)}`, 'success');
+  } else {
+    const pos = state.positions[etfId];
+    if (!pos || pos.shares < qty) { showToast('持仓不足!', 'error'); return; }
+    const sellValue = total;
+    const costBasis = pos.totalCost * (qty / pos.shares);
+    state.cash += sellValue;
+    pos.shares -= qty;
+    pos.totalCost -= costBasis;
+    if (pos.shares <= 0) {
+      delete state.positions[etfId];
+    } else {
+      pos.marketValue = pos.shares * price;
+      pos.pnl = pos.marketValue - pos.totalCost;
+      pos.pnlPct = pos.totalCost > 0 ? (pos.pnl / pos.totalCost * 100) : 0;
+    }
+    showToast(`卖出 ${qty} 份 ${etf.fullName}，成交价 ¥${price.toFixed(2)}`, 'info');
+  }
+
+  // 记录交易
+  state.trades.push({
+    day: state.day,
+    type: isBuy ? 'buy' : 'sell',
+    etfId,
+    shares: qty,
+    price,
+    total: isBuy ? -total : total
+  });
+
+  // 同步 NAV 历史（如有缺口）
+  if (state.navHistory.length === 0 || state.navHistory[state.navHistory.length-1].day !== state.day) {
+    state.navHistory.push({
+      day: state.day,
+      total: getTotalAsset(),
+      cash: state.cash,
+      holdings: getHoldingsValue()
+    });
+  } else {
+    const last = state.navHistory[state.navHistory.length-1];
+    last.total = getTotalAsset();
+    last.cash = state.cash;
+    last.holdings = getHoldingsValue();
+  }
+
+  renderAll();
+}
+
+// ============================================================
+// 5. 自动运行
+// ============================================================
+function startAutoRun() {
+  const btn = document.getElementById('autoBtn');
+  if (state.autoTimer) {
+    clearInterval(state.autoTimer);
+    state.autoTimer = null;
+    btn.textContent = '▶ 自动运行';
+    return;
+  }
+  btn.textContent = '⏹ 停止';
+  state.autoTimer = setInterval(() => {
+    advanceTime();
+    // 每次推进后检查总天数
+    if (state.day >= 500) {
+      clearInterval(state.autoTimer);
+      state.autoTimer = null;
+      document.getElementById('autoBtn').textContent = '▶ 自动运行';
+      showToast('模拟达到500天上限，已自动停止', 'info');
+    }
+  }, 800);
+}
+
+function resetAll() {
+  if (state.autoTimer) {
+    clearInterval(state.autoTimer);
+    state.autoTimer = null;
+    document.getElementById('autoBtn').textContent = '▶ 自动运行';
+  }
+  // 重置状态
+  state.day = 0;
+  state.cash = 1000000;
+  state.positions = {};
+  state.trades = [];
+  state.navHistory = [];
+  state.navHistory.push({ day: 0, total: 1000000, cash: 1000000, holdings: 0 });
+
+  // 重置价格
+  ETFs.forEach(e => {
+    e.currentPrice = e.basePrice;
+    e.openPrice = e.basePrice;
+    e.priceHistory = [];
+    state.priceHistory[e.id] = [e.basePrice];
+  });
+  showToast('已重置所有模拟数据', 'info');
+  renderAll();
+}
+
+// ============================================================
+// 6. 渲染
+// ============================================================
+function renderAll() {
+  renderMarket();
+  renderPositions();
+  renderTradeLog();
+  updateTradeSummary();
+  drawChart();
+  updateHeaderStats();
+  populateTradeSymbol();
+}
+
+function renderMarket() {
+  const tbody = document.getElementById('marketBody');
+  tbody.innerHTML = '';
+  ETFs.forEach(e => {
+    const ret = (e.currentPrice - e.basePrice) / e.basePrice * 100;
+    const isUp = ret >= 0;
+    const lev = e.isUnderlying ? 1 : (e.leverage === 2 ? 2 : 3);
+    const levClass = lev === 1 ? 'l1' : (lev === 2 ? 'l2' : 'l3');
+    const levLabel = lev === 1 ? '标的' : lev + 'x';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>
+        <div class="symbol-name">${e.name}</div>
+        <div class="symbol-sub">${e.isUnderlying ? e.underlyingId.toUpperCase() : ''}</div>
+      </td>
+      <td><span class="tag-leverage ${levClass}">${levLabel}</span></td>
+      <td class="price">¥${e.currentPrice.toFixed(2)}</td>
+      <td class="change ${isUp ? 'up' : 'down'}">${isUp ? '+' : ''}${ret.toFixed(2)}%</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderPositions() {
+  const totalAsset = getTotalAsset();
+  const holdingsVal = getHoldingsValue();
+  const initBal = 1000000;
+  const totalPnl = totalAsset - initBal;
+  const totalPnlPct = (totalPnl / initBal) * 100;
+
+  document.getElementById('portCash').textContent = '¥' + state.cash.toFixed(2);
+  document.getElementById('portHoldings').textContent = '¥' + holdingsVal.toFixed(2);
+  document.getElementById('portTotal').textContent = '¥' + totalAsset.toFixed(2);
+  const pnlEl = document.getElementById('portPnl');
+  pnlEl.textContent = (totalPnl >= 0 ? '+' : '') + '¥' + totalPnl.toFixed(2);
+  pnlEl.className = 'value ' + (totalPnl >= 0 ? 'up' : 'down');
+
+  const list = document.getElementById('positionList');
+  const posEntries = Object.entries(state.positions).filter(([_, p]) => p.shares > 0);
+  if (posEntries.length === 0) {
+    list.innerHTML = '<div class="empty-state">暂无持仓 — 在市场行情中选择品种进行模拟交易</div>';
+    return;
+  }
+  list.innerHTML = '';
+  posEntries.forEach(([etfId, pos]) => {
+    const etf = ETFs.find(e => e.id === etfId);
+    if (!etf) return;
+    const price = getEtfPrice(etfId);
+    const mv = pos.shares * price;
+    const pnl = mv - pos.totalCost;
+    const pnlPct = pos.totalCost > 0 ? (pnl / pos.totalCost * 100) : 0;
+    const isUp = pnl >= 0;
+    const div = document.createElement('div');
+    div.className = 'position-row';
+    div.innerHTML = `
+      <div class="position-info">
+        <span class="position-name">${etf.fullName}</span>
+        <span class="position-detail">${pos.shares} 份 × ¥${price.toFixed(2)}</span>
+      </div>
+      <div class="position-pnl ${isUp ? 'up' : 'down'}">
+        <div class="amount">${isUp ? '+' : ''}¥${pnl.toFixed(2)}</div>
+        <div class="pct">${isUp ? '+' : ''}${pnlPct.toFixed(2)}%</div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function renderTradeLog() {
+  const container = document.getElementById('tradeLog');
+  const label = document.getElementById('tradeCountLabel');
+  label.textContent = `共 ${state.trades.length} 笔`;
+  if (state.trades.length === 0) {
+    container.innerHTML = '<div class="empty-state">暂无交易记录</div>';
+    return;
+  }
+  container.innerHTML = '';
+  // 倒序显示最新的
+  const recent = state.trades.slice().reverse().slice(0, 30);
+  recent.forEach(t => {
+    const etf = ETFs.find(e => e.id === t.etfId);
+    const div = document.createElement('div');
+    div.className = 'log-item';
+    div.innerHTML = `
+      <div>
+        <span class="log-type ${t.type}">${t.type === 'buy' ? '买入' : '卖出'}</span>
+        <span class="log-symbol">${etf ? etf.fullName : t.etfId}</span>
+      </div>
+      <div>
+        <span class="log-price">${t.shares}份 @ ¥${t.price.toFixed(2)}</span>
+        <span class="log-time">第${t.day}天</span>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function updateHeaderStats() {
+  const total = getTotalAsset();
+  const pnl = total - 1000000;
+  const pnlPct = (pnl / 1000000) * 100;
+  document.getElementById('totalAssetDisplay').textContent = '¥' + total.toFixed(2);
+  const retEl = document.getElementById('totalReturnDisplay');
+  retEl.textContent = (pnl >= 0 ? '+' : '') + pnlPct.toFixed(2) + '%';
+  retEl.className = 'header-stat-value ' + (pnl >= 0 ? 'positive' : 'negative');
+  document.getElementById('dayCount').textContent = state.day;
+}
+
+// ============================================================
+// 7. 图表绘制
+// ============================================================
+let chartCanvas, chartCtx;
+
+function getChartData() {
+  const data = state.navHistory;
+  if (data.length === 0) return { labels: [], nav: [], initLine: [] };
+  let filtered = data;
+  if (state.chartPeriod === '20') {
+    filtered = data.slice(-20);
+  } else if (state.chartPeriod === '50') {
+    filtered = data.slice(-50);
+  }
+  const labels = filtered.map(d => 'D' + d.day);
+  const nav = filtered.map(d => d.total);
+  const initLine = filtered.map(() => 1000000);
+  return { labels, nav, initLine };
+}
+
+function drawChart() {
+  const canvas = document.getElementById('mainChart');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * 2;
+  canvas.height = rect.height * 2;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  chartCtx = canvas.getContext('2d');
+  const ctx = chartCtx;
+  ctx.scale(2,2);
+
+  const W = rect.width, H = rect.height;
+  const PAD = { top: 20, right: 30, bottom: 28, left: 55 };
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+
+  // Clear
+  ctx.clearRect(0, 0, W, H);
+
+  const data = getChartData();
+  if (data.labels.length === 0) {
+    ctx.fillStyle = '#64748b';
+    ctx.font = '13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('等待数据...', W/2, H/2);
+    return;
+  }
+
+  // Determine Y range
+  const allY = [...data.nav, ...data.initLine];
+  let yMin = Math.min(...allY), yMax = Math.max(...allY);
+  const pad = (yMax - yMin) * 0.1 || 1000;
+  yMin -= pad; yMax += pad;
+
+  // Grid & axes
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = 1;
+  const yTicks = 5;
+  for (let i = 0; i <= yTicks; i++) {
+    const y = PAD.top + plotH - (i / yTicks) * plotH;
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, y);
+    ctx.lineTo(PAD.left + plotW, y);
+    ctx.stroke();
+    ctx.fillStyle = '#64748b';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'right';
+    const val = yMin + (i / yTicks) * (yMax - yMin);
+    ctx.fillText('¥' + val.toFixed(0), PAD.left - 6, y + 3);
+  }
+
+  // X labels (just start/end)
+  ctx.fillStyle = '#64748b';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(data.labels[0], PAD.left, H - 5);
+  ctx.fillText(data.labels[data.labels.length-1], PAD.left + plotW, H - 5);
+
+  // Map helpers
+  const mapX = (i) => PAD.left + (i / Math.max(data.labels.length-1, 1)) * plotW;
+  const mapY = (v) => PAD.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
+
+  // Draw init line (dashed)
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  data.initLine.forEach((v, i) => {
+    const x = mapX(i), y = mapY(v);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Draw NAV line
+  const gradient = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + plotH);
+  gradient.addColorStop(0, 'rgba(59,130,246,0.3)');
+  gradient.addColorStop(1, 'rgba(59,130,246,0.02)');
+
+  ctx.beginPath();
+  data.nav.forEach((v, i) => {
+    const x = mapX(i), y = mapY(v);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Fill area
+  const lastX = mapX(data.nav.length-1);
+  const lastY = mapY(data.nav[data.nav.length-1]);
+  ctx.lineTo(lastX, PAD.top + plotH);
+  ctx.lineTo(mapX(0), PAD.top + plotH);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  // Current value label
+  const curVal = data.nav[data.nav.length-1];
+  const curX = mapX(data.nav.length-1);
+  const curY = mapY(curVal);
+  ctx.fillStyle = '#3b82f6';
+  ctx.beginPath();
+  ctx.arc(curX, curY, 4, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#e2e8f0';
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'left';
+  const label = '¥' + curVal.toFixed(2);
+  ctx.fillText(label, curX + 8, curY + 3);
+}
+
+function setChartPeriod(p) {
+  state.chartPeriod = p;
+  document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.chart-btn[data-period="${p}"]`).classList.add('active');
+  drawChart();
+}
+
+// ============================================================
+// 8. 工具函数
+// ============================================================
+function populateTradeSymbol() {
+  const sel = document.getElementById('tradeSymbol');
+  sel.innerHTML = '';
+  // 只显示可交易的 ETF（非标的物也可交易，但标的物可以单独选择）
+  ETFs.forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e.id;
+    opt.textContent = e.isUnderlying ? e.name + ' (标的)' : e.name;
+    sel.appendChild(opt);
+  });
+  sel.addEventListener('change', updateTradeSummary);
+  document.getElementById('tradeQty').addEventListener('input', updateTradeSummary);
+  updateTradeSummary();
+}
+
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function showModal(topic) {
+  const overlay = document.getElementById('modal');
+  const title = document.getElementById('modalTitle');
+  const body = document.getElementById('modalBody');
+  overlay.classList.add('show');
+  if (topic === 'dailyReset') {
+    title.textContent = '每日重置机制 — 计算示例';
+    body.innerHTML = `
+      <p>假设某标的初始价格 <strong>¥100</strong>，3倍杠杆ETF初始价格 <strong>¥100</strong>。</p>
+      <p><strong>第1天：</strong>标的涨 <span style="color:var(--accent-green);">+10%</span> → ¥110<br>
+      3x ETF涨 <span style="color:var(--accent-green);">+30%</span> → ¥130 <span style="color:var(--text-muted);">（10% × 3）</span></p>
+      <p><strong>第2天：</strong>标的跌 <span style="color:var(--accent-red);">-10%</span> → ¥99<br>
+      3x ETF跌 <span style="color:var(--accent-red);">-30%</span> → ¥91 <span style="color:var(--text-muted);">（-10% × 3）</span></p>
+      <p><strong>结果对比：</strong><br>
+      标的净变化：-1%<br>
+      3x ETF净变化：<strong style="color:var(--accent-red);">-9%</strong>（而非 -3%）</p>
+      <p style="color:var(--accent-cyan);font-weight:600;">关键点：杠杆ETF追求的是日收益率的倍数，复利效应导致偏离。</p>
+    `;
+  } else if (topic === 'volatilityDecay') {
+    title.textContent = '波动损耗 — 计算示例';
+    body.innerHTML = `
+      <p>这是杠杆ETF最关键的机制——<strong style="color:var(--accent-yellow);">震荡市中的损耗</strong>：</p>
+      <p><strong>场景：</strong>标的在两天内先涨后跌，幅度相同。</p>
+      <p>第一天：标的 <span style="color:var(--accent-green);">+10%</span> → 3x ETF <span style="color:var(--accent-green);">+30%</span><br>
+      第二天：标的 <span style="color:var(--accent-red);">-10%</span> → 3x ETF <span style="color:var(--accent-red);">-30%</span></p>
+      <p><strong>结果：</strong><br>
+      标的：100 → 110 → 99（-1%）<br>
+      3x ETF：100 → 130 → <strong style="color:var(--accent-red);">91（-9%）</strong><br>
+      3倍杠杆预期收益：-1% × 3 = <strong>-3%</strong><br>
+      实际收益：<strong>-9%</strong> ← 额外的<strong style="color:var(--accent-yellow);">-6%就是波动损耗</strong></p>
+      <p style="color:var(--text-secondary);font-size:12px;">
+      💡 波动越大、震荡次数越多，损耗越严重。这就是杠杆ETF不适合长期持有的根本原因。</p>
+    `;
+  }
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+// ============================================================
+// 9. 初始化
+// ============================================================
+// 初始 NAV 记录
+state.navHistory.push({ day: 0, total: 1000000, cash: 1000000, holdings: 0 });
+
+// 窗口变化重绘图表
+window.addEventListener('resize', () => { drawChart(); });
+
+// 初始渲染
+populateTradeSymbol();
+renderAll();
+
+console.log('⚡ 杠杆ETF模拟交易平台已加载');
+console.log('📊 品种:', ETFs.length, '(含标的和杠杆ETF)');
+console.log('💡 操作提示: 点击"推进一天"模拟行情变化，或点击"自动运行"连续模拟');
+</script>
+</body>
+</html>
