@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>交易所双业务线管理平台 v2.0</title>
+<style>
+:root {
+  --bg-primary: #0a0e17;
+  --bg-secondary: #111827;
+  --bg-card: #1a2332;
+  --bg-card-hover: #1e293b;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-green: #22c55e;
+  --accent-red: #ef4444;
+  --accent-yellow: #eab308;
+  --accent-orange: #f97316;
+  --accent-purple: #a855f7;
+  --accent-pink: #ec4899;
+  --border-color: #1e3a5f;
+  --border-subtle: #1e293b;
+  --shadow-glow: 0 0 20px rgba(59,130,246,0.1);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --font-mono: 'Consolas','Courier New',monospace;
+  --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 4px; }
+
+/* ===== 顶部导航 ===== */
+.header {
+  background: linear-gradient(135deg, #0f1729 0%, #1a2332 100%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.header-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-yellow), var(--accent-orange), var(--accent-red));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.logo-badge {
+  font-size: 10px;
+  background: rgba(249,115,22,0.15);
+  color: var(--accent-orange);
+  border: 1px solid rgba(249,115,22,0.3);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.header-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.header-stat { text-align: right; }
+.header-stat-label { font-size: 11px; color: var(--text-muted); }
+.header-stat-value { font-size: 15px; font-weight: 700; font-family: var(--font-mono); }
+
+/* ===== 业务线切换 ===== */
+.biz-switcher {
+  display: flex;
+  gap: 8px;
+  padding: 8px 24px;
+  background: linear-gradient(90deg, rgba(15,23,41,0.9) 0%, rgba(26,35,50,0.9) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+  align-items: center;
+}
+.biz-btn {
+  padding: 8px 20px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: all .2s;
+  font-weight: 600;
+}
+.biz-btn:hover { border-color: var(--accent-cyan); color: var(--text-secondary); }
+.biz-btn.active {
+  box-shadow: 0 0 12px rgba(6,182,212,0.15);
+}
+.biz-btn.active.etf { background: rgba(6,182,212,0.12); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+.biz-btn.active.margin { background: rgba(249,115,22,0.12); border-color: var(--accent-orange); color: var(--accent-orange); }
+.biz-divider { width:1px; height:20px; background:var(--border-subtle); margin:0 4px; }
+.biz-stat { font-size:11px; color:var(--text-muted); margin-left:auto; }
+
+/* ===== 统一风险概览 ===== */
+.risk-header { padding: 12px 24px; background: linear-gradient(90deg, rgba(15,23,41,0.95) 0%, rgba(26,35,50,0.95) 100%); border-bottom: 1px solid var(--border-color); }
+.rh-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--accent-cyan); }
+.rh-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.rh-item { text-align: center; padding: 8px; background: var(--bg-secondary); border-radius: 6px; border: 1px solid var(--border-subtle); }
+.rh-label { font-size: 11px; color: var(--text-muted); }
+.rh-value { font-size: 20px; font-weight: 700; font-family: var(--font-mono); margin: 2px 0; }
+.rh-sub { font-size: 10px; color: var(--text-muted); }
+
+/* ===== Tab按钮 ===== */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 6px 24px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.tab-btn {
+  padding: 5px 12px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 6px;
+  transition: all .2s;
+  font-weight: 500;
+}
+.tab-btn:hover { border-color: var(--accent-cyan); color: var(--text-secondary); }
+.tab-btn.active { background: rgba(6,182,212,0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
+/* ===== 内容区 ===== */
+.content { max-width: 1440px; margin: 0 auto; padding: 16px; }
+
+/* ===== 卡片 ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-body { padding: 12px 16px; }
+
+/* ===== Dashboard 指标 ===== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.dashboard-grid.g5 { grid-template-columns: repeat(5, 1fr); }
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px;
+  height: 100%;
+}
+.stat-card.blue::before { background: var(--accent-blue); }
+.stat-card.green::before { background: var(--accent-green); }
+.stat-card.orange::before { background: var(--accent-orange); }
+.stat-card.red::before { background: var(--accent-red); }
+.stat-card.cyan::before { background: var(--accent-cyan); }
+.stat-card.purple::before { background: var(--accent-purple); }
+.stat-card.pink::before { background: var(--accent-pink); }
+.stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.stat-value { font-size: 20px; font-weight: 700; font-family: var(--font-mono); }
+.stat-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.stat-value.green { color: var(--accent-green); }
+.stat-value.red { color: var(--accent-red); }
+.stat-value.cyan { color: var(--accent-cyan); }
+.stat-value.yellow { color: var(--accent-yellow); }
+.stat-value.orange { color: var(--accent-orange); }
+.stat-value.purple { color: var(--accent-purple); }
+.stat-value.pink { color: var(--accent-pink); }
+
+/* ===== 原理说明 ===== */
+.explain-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.explain-section h3 {
+  font-size: 15px;
+  color: var(--accent-cyan);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.explain-section .flow-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  flex-wrap: wrap;
+}
+.flow-node {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  text-align: center;
+  min-width: 120px;
+}
+.flow-node .node-label { font-size: 11px; color: var(--text-muted); }
+.flow-node .node-value { font-size: 14px; font-weight: 700; margin-top: 4px; }
+.flow-arrow { color: var(--accent-cyan); font-size: 20px; }
+
+/* ===== 表格 ===== */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 8px 10px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(30,41,59,0.5);
+}
+.data-table tr:hover td { background: rgba(59,130,246,0.04); }
+.data-table .text-right { text-align: right; }
+.data-table .text-center { text-align: center; }
+
+/* 风险等级标签 */
+.risk-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.risk-low { background: rgba(34,197,94,0.15); color: var(--accent-green); }
+.risk-mid { background: rgba(234,179,8,0.15); color: var(--accent-yellow); }
+.risk-high { background: rgba(249,115,22,0.15); color: var(--accent-orange); }
+.risk-danger { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+.mono { font-family: var(--font-mono); }
+.up { color: var(--accent-green); }
+.down { color: var(--accent-red); }
+.tag-lev { display:inline-block; padding:1px 6px; border-radius:3px; font-size:11px; font-weight:600; }
+.tag-lev.l2 { background:rgba(59,130,246,0.15); color:var(--accent-blue); }
+.tag-lev.l3 { background:rgba(168,85,247,0.15); color:var(--accent-purple); }
+
+/* ===== 风控警报 ===== */
+.alerts-list { display: flex; flex-direction: column; gap: 6px; }
+.alert-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  border-left: 3px solid;
+}
+.alert-item.warning { background: rgba(234,179,8,0.08); border-color: var(--accent-yellow); }
+.alert-item.danger { background: rgba(239,68,68,0.08); border-color: var(--accent-red); }
+.alert-item.info { background: rgba(59,130,246,0.08); border-color: var(--accent-blue); }
+.alert-item.critical { background: rgba(239,68,68,0.15); border-color: var(--accent-pink); }
+.alert-icon { font-size: 16px; }
+.alert-text { flex: 1; }
+.alert-time { font-size: 11px; color: var(--text-muted); }
+
+/* ===== Tab 内容 ===== */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.biz-content { display: none; }
+.biz-content.active { display: block; }
+.sub-tab-content { display: none; }
+.sub-tab-content.active { display: block; }
+
+/* ===== 压力测试 ===== */
+.stress-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.stress-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+}
+.stress-item:hover { border-color: var(--accent-cyan); }
+.stress-item h5 { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.stress-item .result {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+/* ===== 客户详情弹窗 ===== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-content .close-btn {
+  margin-top: 16px;
+  padding: 8px 24px;
+  background: var(--accent-blue);
+  border: none;
+  color: #fff;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* ===== 产品卡片 ===== */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.product-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+.product-card h5 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+.prod-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 3px 0;
+  color: var(--text-secondary);
+}
+.prod-row .val { font-family: var(--font-mono); color: var(--text-primary); }
+.progress-bar {
+  height: 4px;
+  background: #1e293b;
+  border-radius: 2px;
+  margin: 6px 0;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .5s;
+}
+.progress-fill.safe { background: var(--accent-green); }
+.progress-fill.warn { background: var(--accent-yellow); }
+.progress-fill.danger { background: var(--accent-orange); }
+.progress-fill.critical { background: var(--accent-red); }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 200;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all .3s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(0); }
+.toast.info { background: rgba(59,130,246,0.2); border: 1px solid var(--accent-blue); color: var(--accent-blue); }
+
+/* ===== 响应式 ===== */
+@media (max-width: 1024px) {
+  .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-grid.g5 { grid-template-columns: repeat(3, 1fr); }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .stress-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .dashboard-grid.g5 { grid-template-columns: 1fr; }
+  .products-grid { grid-template-columns: 1fr; }
+  .header { flex-direction: column; gap: 8px; }
+  .tab-bar { flex-wrap: wrap; }
+  .biz-switcher { flex-wrap: wrap; }
+}
+
+/* ===== Gauge仪表 ===== */
+.gauge-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.gauge-box {
+  flex: 1;
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+}
+.gauge-box .gauge-label { font-size: 11px; color: var(--text-muted); }
+.gauge-box .gauge-value { font-size: 26px; font-weight: 700; font-family: var(--font-mono); margin: 4px 0; }
+.gauge-box .gauge-bar {
+  height: 6px;
+  background: #1e293b;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.gauge-box .gauge-fill { height: 100%; border-radius: 3px; transition: width .5s; }
+.level-safe { color: var(--accent-green); }
+.level-warn { color: var(--accent-yellow); }
+.level-danger { color: var(--accent-red); }
+.level-critical { color: var(--accent-pink); }
+
+/* ===== 时间控制 ===== */
+.time-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.time-control button {
+  padding: 5px 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 12px;
+}
+.time-control button:hover { border-color: var(--accent-cyan); }
+.time-control .day-label { font-size:12px; color:var(--text-muted); }
+
+/* ===== 配资引擎流程图 ===== */
+.engine-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 16px 0;
+  overflow-x: auto;
+}
+.engine-step {
+  flex: 1;
+  min-width: 140px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 14px;
+  position: relative;
+  text-align: center;
+}
+.engine-step:not(:last-child)::after {
+  content: '\2192';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent-cyan);
+  font-size: 18px;
+  z-index: 1;
+}
+.engine-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+.engine-step:last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+.engine-step .step-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(6,182,212,0.15);
+  color: var(--accent-cyan);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.engine-step .step-title { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.engine-step .step-desc { font-size: 11px; color: var(--text-secondary); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<!-- ===== 顶部导航 ===== -->
+<header class="header">
+  <div class="header-left">
+    <span class="logo">&#9881; 交易所双业务线管理平台</span>
+    <span class="logo-badge">ADMIN v2.0</span>
+    <div class="time-control">
+      <span class="day-label">模拟第 <span id="adminDayCount">0</span> 天</span>
+      <button onclick="advanceAdminDay()">&#9654; 推进一天</button>
+      <button onclick="startAdminAuto()" id="adminAutoBtn">&#9654; 自动</button>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="leveraged_etf_simulator.html" target="_blank" style="font-size:12px;color:var(--accent-cyan);text-decoration:none;">进入交易端 &#8594;</a>
+  </div>
+</header>
+
+<!-- ===== 统一风险概览 ===== -->
+<div class="risk-header">
+  <div class="rh-title">&#x1F3E6; 交易所总风险敞口 \u2014 两种产品，同一份风险</div>
+  <div class="rh-grid">
+    <div class="rh-item">
+      <div class="rh-label">总风险敞口</div>
+      <div class="rh-value cyan" id="totalRiskExposure">&#165;0</div>
+      <div class="rh-sub">ETF互换敞口 + 配资敞口</div>
+    </div>
+    <div class="rh-item">
+      <div class="rh-label">ETF互换敞口</div>
+      <div class="rh-value" id="etfRiskExposure" style="color:#06b6d4;">&#165;0</div>
+      <div class="rh-sub">通过收益互换提供的杠杆</div>
+    </div>
+    <div class="rh-item">
+      <div class="rh-label">配资敞口</div>
+      <div class="rh-value" id="marginRiskExposure" style="color:#f97316;">&#165;0</div>
+      <div class="rh-sub">直接借贷提供的杠杆</div>
+    </div>
+    <div class="rh-item">
+      <div class="rh-label">总收入(日)</div>
+      <div class="rh-value green" id="totalDailyIncome">&#165;0</div>
+      <div class="rh-sub">管理费 + 配资利息</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 业务线切换 ===== -->
+<div class="biz-switcher">
+  <button class="biz-btn etf active" data-biz="etf" onclick="switchBizLine('etf')">&#x1F4C8; ETF业务线（收益互换）</button>
+  <button class="biz-btn margin" data-biz="margin" onclick="switchBizLine('margin')">&#x26A1; 配资业务线（直接借贷）</button>
+  <div class="biz-divider"></div>
+  <span class="biz-stat" id="bizStatus">两种产品，同一份风险</span>
+</div>
+
+<!-- ===== ETF Tab按钮 ===== -->
+<div class="tab-bar" id="tabBarEtf">
+  <button class="tab-btn active" data-subtab="etf-overview" onclick="switchSubTab('etf','etf-overview')">&#x1F4CA; ETF总览</button>
+  <button class="tab-btn" data-subtab="etf-products" onclick="switchSubTab('etf','etf-products')">&#x1F4E6; ETF产品</button>
+  <button class="tab-btn" data-subtab="etf-clients" onclick="switchSubTab('etf','etf-clients')">&#x1F465; ETF客户</button>
+  <button class="tab-btn" data-subtab="etf-education" onclick="switchSubTab('etf','etf-education')">&#x1F4D6; 原理</button>
+</div>
+
+<!-- ===== 配资 Tab按钮 ===== -->
+<div class="tab-bar" id="tabBarMargin" style="display:none;">
+  <button class="tab-btn active" data-subtab="margin-overview" onclick="switchSubTab('margin','margin-overview')">&#x1F4CA; 配资总览</button>
+  <button class="tab-btn" data-subtab="margin-products" onclick="switchSubTab('margin','margin-products')">&#x1F4E6; 配资产品</button>
+  <button class="tab-btn" data-subtab="margin-clients" onclick="switchSubTab('margin','margin-clients')">&#x1F465; 配资客户</button>
+  <button class="tab-btn" data-subtab="margin-risk" onclick="switchSubTab('margin','margin-risk')">&#x26A0;&#xFE0F; 风控</button>
+  <button class="tab-btn" data-subtab="margin-education" onclick="switchSubTab('margin','margin-education')">&#x1F4D6; 原理</button>
+</div>
+
+<div class="content">
+
+<!-- ================================================================ -->
+<!-- ===== ETF 业务线内容 ===== -->
+<!-- ================================================================ -->
+<div class="biz-content active" id="biz-etf">
+
+  <!-- ETF 总览 -->
+  <div class="sub-tab-content active" id="sub-etf-overview">
+    <div class="dashboard-grid">
+      <div class="stat-card cyan">
+        <div class="stat-label">ETF总AUM</div>
+        <div class="stat-value cyan" id="etfAum">&#165;0</div>
+        <div class="stat-sub">客户ETF持仓总市值</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">管理费收入(日)</div>
+        <div class="stat-value green" id="etfDailyFee">&#165;0</div>
+        <div class="stat-sub">年化0.8%每日计提</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">管理费收入(累计)</div>
+        <div class="stat-value" id="etfTotalFee">&#165;0</div>
+        <div class="stat-sub">所有ETF管理费总和</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">ETF产品数量</div>
+        <div class="stat-value purple" id="etfProductCount">0</div>
+        <div class="stat-sub">杠杆ETF产品总数</div>
+      </div>
+    </div>
+
+    <div class="explain-section">
+      <h3>&#x1F3E6; ETF业务总览</h3>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+        交易所发行和管理杠杆ETF产品。客户通过购买ETF份额间接获得杠杆化标的资产敞口。
+        交易所收取<strong style="color:var(--accent-green);">年化0.8%管理费</strong>，每日从基金净资产中计提。
+        与配资业务不同，ETF业务<strong style="color:var(--accent-cyan);">不涉及利息、保证金和强制平仓</strong>，
+        客户承担投资盈亏，交易所收取稳定的管理费收入。
+      </p>
+    </div>
+
+    <!-- ETF产品概览表 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F4E6; ETF产品概览</div>
+      </div>
+      <div class="card-body">
+        <table class="data-table" id="etfProductOverviewTable">
+          <thead>
+            <tr><th>产品</th><th>杠杆</th><th class="text-right">NAV</th><th class="text-right">AUM</th><th class="text-right">总份额</th><th class="text-right">持有客户</th><th class="text-right">管理费/日</th></tr>
+          </thead>
+          <tbody id="etfProductOverviewBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETF 产品 -->
+  <div class="sub-tab-content" id="sub-etf-products">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F4E6; 杠杆ETF产品详情</div>
+        <div style="font-size:11px;color:var(--text-muted);">管理费年化0.8%每日从NAV计提</div>
+      </div>
+      <div class="card-body">
+        <div class="products-grid" id="etfProductsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETF 客户 -->
+  <div class="sub-tab-content" id="sub-etf-clients">
+    <div class="dashboard-grid">
+      <div class="stat-card blue">
+        <div class="stat-label">ETF客户总数</div>
+        <div class="stat-value cyan" id="etfClientCount">0</div>
+        <div class="stat-sub">持有ETF的客户</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">盈利客户</div>
+        <div class="stat-value green" id="etfWinCount">0</div>
+        <div class="stat-sub">浮动盈利</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">亏损客户</div>
+        <div class="stat-value red" id="etfLoseCount">0</div>
+        <div class="stat-sub">浮动亏损</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">总持仓AUM</div>
+        <div class="stat-value orange" id="etfClientAum">&#165;0</div>
+        <div class="stat-sub">ETF持仓总市值</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F465; ETF客户持仓明细</div>
+        <span style="font-size:11px;color:var(--text-muted);">点击客户查看详情</span>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <table class="data-table" id="etfClientTable">
+          <thead>
+            <tr><th>客户</th><th>ETF数量</th><th class="text-right">总持仓市值</th><th class="text-right">总投入</th><th class="text-right">浮动盈亏</th><th class="text-right">收益率</th></tr>
+          </thead>
+          <tbody id="etfClientTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETF 原理 -->
+  <div class="sub-tab-content" id="sub-etf-education">
+    <div class="explain-section">
+      <h3>&#x1F3D4; 杠杆ETF的本质：交易所通过收益互换为客户配资</h3>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:2;">
+        表面上，客户买了交易所发行的<strong style="color:var(--accent-cyan);">杠杆ETF</strong>。实际上，ETF产品与交易所之间有一笔<strong style="color:var(--accent-yellow);">总收益互换(Total Return Swap)</strong>：
+        交易所向ETF支付标的收益的<strong>L倍</strong>，ETF向交易所支付标的收益的<strong>1倍</strong>。差额部分，本质上是交易所为客户提供了<strong style="color:var(--accent-orange);">隐性的杠杆资金</strong>。
+      </p>
+
+      <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;flex-wrap:wrap;">
+        <div style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:8px;padding:10px 14px;text-align:center;min-width:100px;">
+          <div style="font-size:11px;color:var(--text-muted);">客户</div>
+          <div style="font-size:13px;font-weight:600;">买入份额</div>
+        </div>
+        <div style="color:var(--accent-cyan);font-size:18px;">&#x2192;</div>
+        <div style="background:var(--bg-secondary);border:2px solid var(--accent-cyan);border-radius:8px;padding:10px 14px;text-align:center;min-width:130px;">
+          <div style="font-size:11px;color:var(--text-muted);">杠杆ETF</div>
+          <div style="font-size:13px;font-weight:600;color:var(--accent-cyan);">&#x2194; 收益互换</div>
+        </div>
+        <div style="color:var(--accent-cyan);font-size:18px;">&#x2194;</div>
+        <div style="background:var(--bg-secondary);border:2px solid var(--accent-orange);border-radius:8px;padding:10px 14px;text-align:center;min-width:100px;">
+          <div style="font-size:11px;color:var(--text-muted);">交易所</div>
+          <div style="font-size:13px;font-weight:600;color:var(--accent-orange);">提供杠杆</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;margin:12px 0;">
+        <h4 style="color:var(--accent-yellow);margin-bottom:8px;">&#x1F4DD; 收益互换的计算逻辑</h4>
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">标的日涨幅</td>
+            <td style="padding:6px;font-family:var(--font-mono);">+3%</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">交易所向ETF支付</td>
+            <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-green);">+9%（标的涨幅 &#x00D7; 3倍）</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">ETF向交易所支付</td>
+            <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-red);">+3%（标的涨幅 &#x00D7; 1倍）</td>
+          </tr>
+          <tr>
+            <td style="padding:6px;color:var(--text-secondary);">交易所净支付</td>
+            <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-orange);font-weight:700;">+6%（= 3倍 - 1倍，即配资部分的收益）</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="explain-section">
+      <h3>&#x1F4B0; 与直接配资的风险本质相同</h3>
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <tr style="border-bottom:1px solid var(--border-subtle);background:rgba(6,182,212,0.05);">
+            <td style="padding:8px;font-weight:600;">维度</td>
+            <td style="padding:8px;font-weight:600;color:var(--accent-cyan);">&#x1F4C8; 杠杆ETF（收益互换）</td>
+            <td style="padding:8px;font-weight:600;color:var(--accent-orange);">&#x26A1; 直接配资</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">交易所风险敞口</td>
+            <td style="padding:6px;font-family:var(--font-mono);">ETF规模 &#x00D7; (杠杆-1)</td>
+            <td style="padding:6px;font-family:var(--font-mono);">配资金额</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">交易所收入</td>
+            <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-green);">管理费（0.8%年化）</td>
+            <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-green);">利息（8%-12%年化）</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">客户体验</td>
+            <td style="padding:6px;font-family:var(--font-mono);">像买股票一样，简单</td>
+            <td style="padding:6px;font-family:var(--font-mono);">像期货一样，需管保证金</td>
+          </tr>
+          <tr>
+            <td style="padding:6px;color:var(--text-secondary);">穿仓风险</td>
+            <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-red);">有（对手方风险相同）</td>
+            <td style="padding:6px;font-family:var(--font-mono);color:var(--accent-red);">有（客户不还钱）</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="explain-section">
+      <h3>&#x1F4D6; 每日重置机制</h3>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+        每个交易日收盘后，ETF产品与交易所重新签订互换合约，重置名义本金，使杠杆比例恢复目标值。
+      </p>
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;margin:12px 0;">
+        <h4 style="color:var(--accent-cyan);margin-bottom:8px;">&#x26A1; 波动率拖累</h4>
+        <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+          由于每日重置，震荡行情中会产生路径依赖损耗。即使标的回到原点，ETF净值也可能低于初始值。
+          这个损耗由客户承担，交易所不受影响（交易所通过对冲管理风险）。
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- ===== 配资业务线内容 ===== -->
+<!-- ================================================================ -->
+<div class="biz-content" id="biz-margin">
+
+  <!-- 配资总览 -->
+  <div class="sub-tab-content active" id="sub-margin-overview">
+    <div class="dashboard-grid g5">
+      <div class="stat-card blue">
+        <div class="stat-label">配资总敞口</div>
+        <div class="stat-value cyan" id="mDashExposure">&#165;0</div>
+        <div class="stat-sub">交易所提供的杠杆资金</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">日均利息收入</div>
+        <div class="stat-value green" id="mDashInterest">&#165;0</div>
+        <div class="stat-sub">本日利息收入</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">累计利息收入</div>
+        <div class="stat-value yellow" id="mDashTotalInterest">&#165;0</div>
+        <div class="stat-sub">所有配资利息累计</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">穿仓损失</div>
+        <div class="stat-value red" id="mDashBadDebt">&#165;0</div>
+        <div class="stat-sub">客户穿仓累计损失</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-label">整体杠杆率</div>
+        <div class="stat-value purple" id="mDashLeverage">0.00x</div>
+        <div class="stat-sub">总敞口 / 自有资本</div>
+      </div>
+    </div>
+
+    <div class="explain-section">
+      <h3>&#x1F3E6; 配资业务总览</h3>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+        交易所为客户提供杠杆资金进行配资交易。客户自有资金 + 交易所配资资金 &#8594; 买入标的资产 &#8594; 每日重新平衡杠杆比例。
+        交易所收取<strong style="color:var(--accent-green);">配资利息</strong>作为收入，同时承担客户亏损超过保证金的<strong style="color:var(--accent-red);">穿仓风险</strong>。
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F4E6; 配资产品概览</div>
+      </div>
+      <div class="card-body">
+        <table class="data-table" id="mProductOverviewTable">
+          <thead>
+            <tr><th>产品</th><th>杠杆</th><th class="text-right">资金池</th><th class="text-right">已使用</th><th class="text-right">使用率</th><th class="text-right">配资利率(年化)</th><th class="text-right">日利息收入</th></tr>
+          </thead>
+          <tbody id="mProductOverviewBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F4B8; 资金流向示意</div>
+      </div>
+      <div class="card-body">
+        <div class="engine-flow">
+          <div class="engine-step">
+            <div class="step-num">1</div>
+            <div class="step-title">客户入金</div>
+            <div class="step-desc">客户投入自有资金作为保证金</div>
+          </div>
+          <div class="engine-step">
+            <div class="step-num">2</div>
+            <div class="step-title">交易所配资</div>
+            <div class="step-desc">按杠杆倍数提供额外资金</div>
+          </div>
+          <div class="engine-step">
+            <div class="step-num">3</div>
+            <div class="step-title">买入标的资产</div>
+            <div class="step-desc">总资金买入对应股票</div>
+          </div>
+          <div class="engine-step">
+            <div class="step-num">4</div>
+            <div class="step-title">每日重平衡</div>
+            <div class="step-desc">调整仓位维持目标杠杆</div>
+          </div>
+          <div class="engine-step">
+            <div class="step-num">5</div>
+            <div class="step-title">收取利息</div>
+            <div class="step-desc">按配资金额收日利息</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配资产品 -->
+  <div class="sub-tab-content" id="sub-margin-products">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F4E6; 配资产品详情</div>
+        <div style="font-size:11px;color:var(--text-muted);">管理各杠杆配资产品的资金池</div>
+      </div>
+      <div class="card-body">
+        <div class="products-grid" id="mProductsGrid"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x2699;&#xFE0F; 配资利率设置</div>
+      </div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+          <div>
+            <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">基准利率 (年化)</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="mBaseRateSlider" min="3" max="15" value="6" step="0.5" onchange="updateMRateSettings()" style="flex:1;accent-color:var(--accent-cyan);">
+              <span id="mBaseRateDisplay" style="font-family:var(--font-mono);font-size:14px;color:var(--accent-cyan);">6.0%</span>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">2倍产品加点</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="mSpread2xSlider" min="1" max="8" value="3" step="0.5" onchange="updateMRateSettings()" style="flex:1;accent-color:var(--accent-blue);">
+              <span id="mSpread2xDisplay" style="font-family:var(--font-mono);font-size:14px;color:var(--accent-blue);">+3.0%</span>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px;">3倍产品加点</label>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="mSpread3xSlider" min="2" max="12" value="5" step="0.5" onchange="updateMRateSettings()" style="flex:1;accent-color:var(--accent-purple);">
+              <span id="mSpread3xDisplay" style="font-family:var(--font-mono);font-size:14px;color:var(--accent-purple);">+5.0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配资客户 -->
+  <div class="sub-tab-content" id="sub-margin-clients">
+    <div class="dashboard-grid">
+      <div class="stat-card blue">
+        <div class="stat-label">客户总数</div>
+        <div class="stat-value cyan" id="mClientCount">0</div>
+        <div class="stat-sub">配资客户</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">盈利客户</div>
+        <div class="stat-value green" id="mWinCount">0</div>
+        <div class="stat-sub">浮动盈利</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">亏损客户</div>
+        <div class="stat-value red" id="mLoseCount">0</div>
+        <div class="stat-sub">浮动亏损</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">需关注客户</div>
+        <div class="stat-value orange" id="mAlertClientCount">0</div>
+        <div class="stat-sub">保证金不足70%</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F465; 配资客户持仓明细</div>
+        <span style="font-size:11px;color:var(--text-muted);">点击客户查看详细持仓</span>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <table class="data-table" id="mClientTable">
+          <thead>
+            <tr><th>客户</th><th>总资产</th><th>自有资金</th><th>配资金额</th><th>持仓市值</th><th>浮动盈亏</th><th>保证金比例</th><th>风险评级</th></tr>
+          </thead>
+          <tbody id="mClientTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配资风控 -->
+  <div class="sub-tab-content" id="sub-margin-risk">
+    <div class="gauge-row">
+      <div class="gauge-box">
+        <div class="gauge-label">整体保证金充足率</div>
+        <div class="gauge-value" id="mRiskMarginRatio">0%</div>
+        <div class="gauge-bar"><div class="gauge-fill" id="mRiskMarginBar" style="width:0%;background:var(--accent-green);"></div></div>
+      </div>
+      <div class="gauge-box">
+        <div class="gauge-label">集中度风险</div>
+        <div class="gauge-value" id="mRiskConcentration">0%</div>
+        <div class="gauge-bar"><div class="gauge-fill" id="mRiskConcBar" style="width:0%;background:var(--accent-green);"></div></div>
+      </div>
+      <div class="gauge-box">
+        <div class="gauge-label">整体杠杆率</div>
+        <div class="gauge-value" id="mRiskOverallLev">0x</div>
+        <div class="gauge-bar"><div class="gauge-fill" id="mRiskLevBar" style="width:0%;background:var(--accent-green);"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F534; 风控警报</div>
+        <span style="font-size:11px;color:var(--text-muted);" id="mAlertCount">0 条警报</span>
+      </div>
+      <div class="card-body">
+        <div class="alerts-list" id="mAlertsList">
+          <div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px;">暂无警报</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">&#x1F9EA; 压力测试</div>
+        <span style="font-size:11px;color:var(--text-muted);">模拟极端行情对保证金的影响</span>
+      </div>
+      <div class="card-body">
+        <div class="stress-grid" id="mStressGrid">
+          <div class="stress-item" onclick="runMStressTest(-5)">
+            <h5>标的跌 -5%</h5>
+            <div class="result" id="mStress1">&mdash;</div>
+            <div style="font-size:10px;color:var(--text-muted);">保证金影响</div>
+          </div>
+          <div class="stress-item" onclick="runMStressTest(-10)">
+            <h5>标的跌 -10%</h5>
+            <div class="result" id="mStress2">&mdash;</div>
+            <div style="font-size:10px;color:var(--text-muted);">保证金影响</div>
+          </div>
+          <div class="stress-item" onclick="runMStressTest(-15)">
+            <h5>标的跌 -15%</h5>
+            <div class="result" id="mStress3">&mdash;</div>
+            <div style="font-size:10px;color:var(--text-muted);">保证金影响</div>
+          </div>
+          <div class="stress-item" onclick="runMStressTest(-20)">
+            <h5>标的跌 -20%</h5>
+            <div class="result" id="mStress4">&mdash;</div>
+            <div style="font-size:10px;color:var(--text-muted);">保证金影响</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配资原理 -->
+  <div class="sub-tab-content" id="sub-margin-education">
+    <div class="explain-section">
+      <h3>&#x1F3DB; 杠杆配资 = 交易所为客户提供杠杆资金</h3>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:2;">
+        杠杆配资的本质就是<strong style="color:var(--accent-cyan);">交易所/做市商为客户提供杠杆资金</strong>进行配资交易。让我们来看一个实际的例子：
+      </p>
+
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;margin:12px 0;">
+        <h4 style="color:var(--accent-yellow);margin-bottom:8px;">&#x1F4DD; 案例：客户3倍配资买入茅台</h4>
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">客户自有资金</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);">&#165;1,000,000</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">交易所配资 (2倍杠杆)</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-cyan);">+ &#165;2,000,000</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">总买入金额</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);font-weight:700;">&#165;3,000,000</td>
+          </tr>
+          <tr>
+            <td style="padding:6px;color:var(--text-secondary);">实际杠杆倍数</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-purple);font-weight:700;">3倍</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="explain-section">
+      <h3>&#x1F504; 每日重置 = 每日重新配资</h3>
+      <p style="font-size:13px;color:var(--text-secondary);line-height:2;">
+        每日重置的实质是：<strong style="color:var(--accent-cyan);">每天收盘后，交易所根据客户最新的资产状况，重新计算配资金额</strong>。
+      </p>
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;margin:12px 0;">
+        <h4 style="color:var(--accent-cyan);margin-bottom:8px;">&#x1F4CA; 重置计算过程</h4>
+        <table style="width:100%;font-size:13px;border-collapse:collapse;" id="mResetExample">
+          <tr style="border-bottom:1px solid var(--border-subtle);background:rgba(59,130,246,0.05);">
+            <td style="padding:8px;font-weight:600;">场景</td>
+            <td style="padding:8px;text-align:right;font-weight:600;">标的涨+10%</td>
+            <td style="padding:8px;text-align:right;font-weight:600;">标的跌-10%</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">客户资产变化</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-green);">+30% &#8594; &#165;1,300,000</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-red);">-30% &#8594; &#165;700,000</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:6px;color:var(--text-secondary);">交易所调整配资</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-cyan);">需追加配资至 &#165;2,600,000</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);color:var(--accent-orange);">需减少配资至 &#165;1,400,000</td>
+          </tr>
+          <tr>
+            <td style="padding:6px;color:var(--text-secondary);">总资产（维持3倍）</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);">&#165;3,900,000</td>
+            <td style="padding:6px;text-align:right;font-family:var(--font-mono);">&#165;2,100,000</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="explain-section">
+      <h3>&#x2696;&#xFE0F; 交易所的风控策略</h3>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+        <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+          <h4 style="color:var(--accent-green);margin-bottom:6px;">&#x1F6E1; 保证金制度</h4>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+            &bull; 初始保证金: 客户自有资金的<b style="color:var(--text-primary);">100%</b>作为保证金<br>
+            &bull; 维持保证金: 保证金比例需维持在<b style="color:var(--accent-yellow);">70%</b>以上<br>
+            &bull; 预警线: 保证金比例低于<b style="color:var(--accent-orange);">50%</b>时触发预警<br>
+            &bull; 强平线: 保证金比例低于<b style="color:var(--accent-red);">30%</b>时强制平仓
+          </p>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+          <h4 style="color:var(--accent-orange);margin-bottom:6px;">&#x1F4CA; 集中度限制</h4>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+            &bull; 单一品种配资不超过总资金池的<b style="color:var(--text-primary);">40%</b><br>
+            &bull; 单一客户配资不超过总资金的<b style="color:var(--text-primary);">20%</b><br>
+            &bull; 高波动品种(3倍)配资系数额外<b style="color:var(--accent-red);">打8折</b><br>
+            &bull; 每日收盘后重新评估集中度风险
+          </p>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+          <h4 style="color:var(--accent-blue);margin-bottom:6px;">&#x1F4C8; 波动率风控</h4>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+            &bull; 实时监控标的波动率变化<br>
+            &bull; 波动率突升时自动调低杠杆上限<br>
+            &bull; 市场波动率 &gt; 30% 时限制3倍产品开仓<br>
+            &bull; 重大事件时启动熔断保护
+          </p>
+        </div>
+        <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+          <h4 style="color:var(--accent-purple);margin-bottom:6px;">&#x1F4CB; 强平与穿仓机制</h4>
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+            &bull; 触发强平线后立即发出强平通知<br>
+            &bull; 优先平掉亏损最大的持仓<br>
+            &bull; 穿仓: 客户亏损超过保证金，损失由交易所承担<br>
+            &bull; 穿仓损失记入<strong style="color:var(--accent-red);">坏账</strong>，影响交易所利润
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="explain-section">
+      <h3>&#x1F4B0; 交易所盈利模型 - 配资业务线</h3>
+      <div style="background:var(--bg-secondary);border-radius:var(--radius);padding:16px;">
+        <table style="width:100%;font-size:13px;border-collapse:collapse;">
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:8px;color:var(--text-secondary);">收入来源</td>
+            <td style="padding:8px;font-weight:600;">配资利息收入</td>
+            <td style="padding:8px;font-size:12px;color:var(--text-muted);">按配资金额 &times; 年化利率 / 365 每日收取</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:8px;color:var(--text-secondary);">成本</td>
+            <td style="padding:8px;font-weight:600;">资金成本 + 运营成本</td>
+            <td style="padding:8px;font-size:12px;color:var(--text-muted);">交易所自有资金的机会成本或融资成本</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border-subtle);">
+            <td style="padding:8px;color:var(--text-secondary);">主要风险</td>
+            <td style="padding:8px;font-weight:600;color:var(--accent-red);">客户穿仓风险</td>
+            <td style="padding:8px;font-size:12px;color:var(--text-muted);">极端行情下客户亏损超过保证金，交易所需承担损失</td>
+          </tr>
+          <tr>
+            <td style="padding:8px;color:var(--text-secondary);">盈利关键</td>
+            <td style="padding:8px;font-weight:600;color:var(--accent-green);">利差 + 风控</td>
+            <td style="padding:8px;font-size:12px;color:var(--text-muted);">收取的利息 &gt; 资金成本 + 坏账损失</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- ===== 客户详情弹窗（共用） ===== -->
+<div class="modal-overlay" id="clientModal">
+  <div class="modal-content">
+    <h3 id="modalTitle" style="margin-bottom:12px;color:var(--accent-cyan);">客户详情</h3>
+    <div id="modalBody"></div>
+    <button class="close-btn" onclick="closeClientModal()">关闭</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 1. 全局模拟数据
+// ============================================================
+const EXCHANGE = {
+  equity: 50000000,
+  // ETF业务
+  etfMgmtFee: 0.8,          // 年化管理费 %
+  totalEtfMgmtFee: 0,       // 累计管理费收入
+  // 配资业务
+  marginRates: { base: 6.0, spread2x: 3.0, spread3x: 5.0 },
+  totalMarginInterest: 0,   // 累计配资利息收入
+  totalBadDebt: 0,          // 累计穿仓损失
+  day: 0,
+  totalDayMarginInterest: 0,
+  totalDayEtfMgmtFee: 0,
+  riskThresholds: {
+    marginWarn: 0.70,
+    marginDanger: 0.50,
+    marginLiquidate: 0.30,
+    concentrationLimit: 0.40,
+  },
+};
+
+// 标的物
+const UNDERLYINGS = [
+  { id: 'mt', name: '茅台', basePrice: 1880, volatility: 0.018 },
+  { id: 'zy', name: '兆易创新', basePrice: 78, volatility: 0.028 },
+  { id: 'nd', name: '宁德时代', basePrice: 245, volatility: 0.025 },
+];
+
+const prices = {};
+UNDERLYINGS.forEach(function(u) {
+  prices[u.id] = { price: u.basePrice, open: u.basePrice, history: [u.basePrice] };
+});
+
+// ============================================================
+// 2. ETF业务线数据
+// ============================================================
+const ETF_PRODUCTS = [
+  { id: 'mt_2x', name: '茅台2倍', underlyingId: 'mt', lev: 2, nav: 1.0, poolSize: 20000000 },
+  { id: 'mt_3x', name: '茅台3倍', underlyingId: 'mt', lev: 3, nav: 1.0, poolSize: 15000000 },
+  { id: 'zy_2x', name: '兆易2倍', underlyingId: 'zy', lev: 2, nav: 1.0, poolSize: 12000000 },
+  { id: 'zy_3x', name: '兆易3倍', underlyingId: 'zy', lev: 3, nav: 1.0, poolSize: 8000000 },
+  { id: 'nd_2x', name: '宁德2倍', underlyingId: 'nd', lev: 2, nav: 1.0, poolSize: 18000000 },
+  { id: 'nd_3x', name: '宁德3倍', underlyingId: 'nd', lev: 3, nav: 1.0, poolSize: 12000000 },
+];
+
+// ETF客户：每人持有不同ETF份额
+// 持仓结构: { etfId, shares, entryNav, marketValue, pnl }
+const SIM_ETF_CLIENTS = [
+  { id: 'E001', name: 'ETF客户_张明', capital: 1000000, positions: {} },
+  { id: 'E002', name: 'ETF客户_李华', capital: 2000000, positions: {} },
+  { id: 'E003', name: 'ETF客户_王芳', capital: 500000, positions: {} },
+  { id: 'E004', name: 'ETF客户_赵强', capital: 3000000, positions: {} },
+  { id: 'E005', name: 'ETF客户_陈丽', capital: 800000, positions: {} },
+  { id: 'E006', name: 'ETF客户_刘伟', capital: 1500000, positions: {} },
+];
+
+// ============================================================
+// 3. 配资业务线数据
+// ============================================================
+const MARGIN_PRODUCTS = [
+  { underlyingId: 'mt', name: '茅台2倍', lev: 2, poolSize: 20000000 },
+  { underlyingId: 'mt', name: '茅台3倍', lev: 3, poolSize: 15000000 },
+  { underlyingId: 'zy', name: '兆易2倍', lev: 2, poolSize: 12000000 },
+  { underlyingId: 'zy', name: '兆易3倍', lev: 3, poolSize: 8000000 },
+  { underlyingId: 'nd', name: '宁德2倍', lev: 2, poolSize: 18000000 },
+  { underlyingId: 'nd', name: '宁德3倍', lev: 3, poolSize: 12000000 },
+];
+
+const MARGIN_PROD_IDS = [
+  { id: 'mt_2x', bid: 'mt', lev: 2 },
+  { id: 'mt_3x', bid: 'mt', lev: 3 },
+  { id: 'zy_2x', bid: 'zy', lev: 2 },
+  { id: 'zy_3x', bid: 'zy', lev: 3 },
+  { id: 'nd_2x', bid: 'nd', lev: 2 },
+  { id: 'nd_3x', bid: 'nd', lev: 3 },
+];
+
+const SIM_MARGIN_CLIENTS = [
+  { id: 'C001', name: '张先生', capital: 1000000, positions: {} },
+  { id: 'C002', name: '李女士', capital: 2000000, positions: {} },
+  { id: 'C003', name: '王总', capital: 500000, positions: {} },
+  { id: 'C004', name: '赵经理', capital: 3000000, positions: {} },
+  { id: 'C005', name: '陈女士', capital: 800000, positions: {} },
+  { id: 'C006', name: '刘先生', capital: 1500000, positions: {} },
+];
+
+// ============================================================
+// 4. 初始化ETF客户持仓
+// ============================================================
+function initEtfClientPositions() {
+  SIM_ETF_CLIENTS.forEach(function(c, idx) {
+    var count = 1 + (idx % 3);
+    var chosen = [];
+    for (var i = 0; i < count; i++) {
+      var pi = (idx + i * 2) % ETF_PRODUCTS.length;
+      chosen.push(ETF_PRODUCTS[pi]);
+    }
+    chosen.forEach(function(ep) {
+      var underlying = UNDERLYINGS.find(function(u) { return u.id === ep.underlyingId; });
+      if (!underlying) return;
+      // 客户投入资金买入ETF份额
+      var investAmount = c.capital * (0.15 + Math.random() * 0.25);
+      var shares = Math.floor(investAmount / ep.nav);
+      // 确保至少有一些份额
+      if (shares < 10) shares = Math.floor(investAmount / 10);
+      if (shares < 10) shares = 10;
+      var entryNav = ep.nav;
+      c.positions[ep.id] = {
+        etfId: ep.id,
+        shares: shares,
+        entryNav: entryNav,
+        marketValue: shares * ep.nav,
+        pnl: 0,
+        investAmount: investAmount,
+      };
+    });
+  });
+}
+initEtfClientPositions();
+
+// ============================================================
+// 5. 初始化配资客户持仓（同原版逻辑）
+// ============================================================
+function initMarginClientPositions() {
+  SIM_MARGIN_CLIENTS.forEach(function(c, idx) {
+    var count = 1 + (idx % 3);
+    var chosen = [];
+    for (var i = 0; i < count; i++) {
+      var pi = (idx + i * 2) % MARGIN_PROD_IDS.length;
+      chosen.push(MARGIN_PROD_IDS[pi]);
+    }
+    chosen.forEach(function(p) {
+      var underlying = UNDERLYINGS.find(function(u) { return u.id === p.bid; });
+      if (!underlying) return;
+      var capitalUsed = c.capital * (0.2 + Math.random() * 0.3);
+      var leverageAmount = capitalUsed * (p.lev - 1);
+      var totalAmount = capitalUsed + leverageAmount;
+      var shares = Math.floor(totalAmount / underlying.basePrice);
+      if (shares < 1) shares = 1;
+      var price = underlying.basePrice;
+      c.positions[p.id] = {
+        underlyingId: p.bid, leverage: p.lev,
+        shares: shares, entryPrice: price,
+        capitalUsed: capitalUsed, leverageAmount: leverageAmount,
+        totalCost: totalAmount,
+        marketValue: shares * price,
+        pnl: 0, marginRatio: 1.0,
+        dailyInterest: 0,
+      };
+    });
+  });
+}
+initMarginClientPositions();
+
+// ============================================================
+// 6. 模拟引擎
+// ============================================================
+function generateDailyReturn(vol) {
+  var u1 = Math.random(), u2 = Math.random();
+  var z = Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  return z * vol;
+}
+
+// 更新标的价格
+function updateUnderlyingPrices() {
+  UNDERLYINGS.forEach(function(u) {
+    var ret = generateDailyReturn(u.volatility);
+    prices[u.id].open = prices[u.id].price;
+    prices[u.id].price *= (1 + ret);
+    prices[u.id].history.push(prices[u.id].price);
+  });
+}
+
+// ===== ETF业务线每日推进 =====
+function advanceEtfDay() {
+  EXCHANGE.totalDayEtfMgmtFee = 0;
+  // 先更新各ETF产品的NAV
+  ETF_PRODUCTS.forEach(function(ep) {
+    var underlying = UNDERLYINGS.find(function(u) { return u.id === ep.underlyingId; });
+    if (!underlying) return;
+    var priceData = prices[underlying.id];
+    var underlyingReturn = (priceData.price - priceData.open) / priceData.open;
+    // ETF净值变化 = 标的涨跌幅 x 杠杆
+    var navReturn = ep.lev * underlyingReturn;
+    ep.nav *= (1 + navReturn);
+    // 扣除管理费（年化0.8%每日计提）
+    var dailyMgmtFee = ep.nav * (EXCHANGE.etfMgmtFee / 100 / 365);
+    ep.nav -= dailyMgmtFee;
+  });
+
+  // 更新各ETF客户持仓
+  SIM_ETF_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      var pos = c.positions[pid];
+      var etfProd = ETF_PRODUCTS.find(function(ep) { return ep.id === pid; });
+      if (!etfProd) continue;
+      var oldMV = pos.marketValue;
+      pos.marketValue = pos.shares * etfProd.nav;
+      pos.pnl = pos.marketValue - (pos.shares * pos.entryNav);
+    }
+  });
+
+  // 计算管理费收入
+  var totalAum = getEtfTotalAum();
+  EXCHANGE.totalDayEtfMgmtFee = totalAum * (EXCHANGE.etfMgmtFee / 100 / 365);
+  EXCHANGE.totalEtfMgmtFee += EXCHANGE.totalDayEtfMgmtFee;
+}
+
+// ===== 配资业务线每日推进 =====
+function advanceMarginDay() {
+  EXCHANGE.totalDayMarginInterest = 0;
+
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      var pos = c.positions[pid];
+      var underlying = UNDERLYINGS.find(function(u) { return u.id === pos.underlyingId; });
+      if (!underlying) continue;
+      var priceData = prices[underlying.id];
+      var underlyingReturn = (priceData.price - priceData.open) / priceData.open;
+      var etfReturn = pos.leverage * underlyingReturn;
+
+      pos.marketValue *= (1 + etfReturn);
+      pos.pnl = pos.marketValue - pos.totalCost;
+
+      var clientEquity = pos.capitalUsed + pos.pnl;
+      pos.marginRatio = pos.marketValue > 0 ? clientEquity / pos.marketValue : 0;
+
+      var levRate = pos.leverage === 2 ?
+        (EXCHANGE.marginRates.base + EXCHANGE.marginRates.spread2x) :
+        (EXCHANGE.marginRates.base + EXCHANGE.marginRates.spread3x);
+      var dailyRate = levRate / 100 / 365;
+      var dailyInterest = pos.leverageAmount * dailyRate;
+      pos.dailyInterest = dailyInterest;
+      EXCHANGE.totalDayMarginInterest += dailyInterest;
+
+      // 穿仓检查：如果客户权益为负，记入坏账
+      if (clientEquity < 0) {
+        var badDebt = Math.abs(clientEquity);
+        EXCHANGE.totalBadDebt += badDebt;
+        // 为避免连续记入，将marginRatio设为0，并重置该持仓
+        // 模拟强制平仓
+        pos.marketValue = 0;
+        pos.pnl = -pos.capitalUsed;
+        pos.marginRatio = 0;
+      }
+    }
+  });
+
+  EXCHANGE.totalMarginInterest += EXCHANGE.totalDayMarginInterest;
+}
+
+// ===== 主推进函数 =====
+function advanceAdminDay() {
+  EXCHANGE.day++;
+  updateUnderlyingPrices();
+  advanceEtfDay();
+  advanceMarginDay();
+  renderAll();
+  var msg = '第 ' + EXCHANGE.day + ' 天完成。ETF管理费: ¥' + EXCHANGE.totalDayEtfMgmtFee.toFixed(2) +
+            ' | 配资利息: ¥' + EXCHANGE.totalDayMarginInterest.toFixed(2);
+  showToast(msg, 'info');
+ }
+
+// ============================================================
+// 7. 渲染主入口
+// ============================================================
+function renderAll() {
+  renderEtfOverview();
+  renderEtfProducts();
+  renderEtfClients();
+  renderMarginOverview();
+  renderMarginProducts();
+  renderMarginClients();
+  renderMarginRisk();
+  renderUnifiedRisk();
+  updateBizStatus();
+  document.getElementById('adminDayCount').textContent = EXCHANGE.day;
+}
+
+function renderUnifiedRisk() {
+  // ETF互换敞口: 每个客户持仓的配资等价敞口
+  var etfRisk = 0;
+  SIM_ETF_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      var pos = c.positions[pid];
+      // 敞口 = 持仓市值 × (杠杆-1)/杠杆
+      var product = null;
+      for (var i = 0; i < ETF_PRODUCTS.length; i++) {
+        if (ETF_PRODUCTS[i].id === pos.etfId) { product = ETF_PRODUCTS[i]; break; }
+      }
+      if (product) {
+        etfRisk += pos.marketValue * (product.leverage - 1) / product.leverage;
+      }
+    }
+  });
+
+  // 配资敞口
+  var marginRisk = 0;
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      var pos = c.positions[pid];
+      marginRisk += pos.leverageAmount;
+    }
+  });
+
+  // 日收入
+  var etfFee = EXCHANGE.totalEtfMgmtFee || 0;
+  var marginInt = EXCHANGE.totalMarginInterest || 0;
+  var dailyFee = EXCHANGE.etfDailyFee || 0;
+  var dailyInt = EXCHANGE.totalDayInterest || 0;
+
+  document.getElementById('totalRiskExposure').textContent = '¥' + (etfRisk + marginRisk).toFixed(0);
+  document.getElementById('etfRiskExposure').textContent = '¥' + etfRisk.toFixed(0);
+  document.getElementById('marginRiskExposure').textContent = '¥' + marginRisk.toFixed(0);
+  document.getElementById('totalDailyIncome').textContent = '¥' + (dailyFee + dailyInt).toFixed(2);
+}
+
+function updateBizStatus() {
+  var aum = getEtfTotalAum();
+  var fee = EXCHANGE.totalEtfMgmtFee;
+  document.getElementById('bizStatus').textContent =
+    'ETF: AUM ¥' + aum.toFixed(0) + ' | 管理费 ¥' + fee.toFixed(2) +
+    ' | 配资利息 ¥' + EXCHANGE.totalMarginInterest.toFixed(2) + ' | 穿仓 ¥' + EXCHANGE.totalBadDebt.toFixed(0);
+}
+
+// ============================================================
+// 8. ETF辅助函数
+// ============================================================
+function getEtfTotalAum() {
+  var total = 0;
+  SIM_ETF_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      total += c.positions[pid].marketValue;
+    }
+  });
+  return total;
+}
+
+function getEtfTotalShares(etfId) {
+  var total = 0;
+  SIM_ETF_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      if (pid === etfId) total += c.positions[pid].shares;
+    }
+  });
+  return total;
+}
+
+function getEtfClientCount(etfId) {
+  var count = 0;
+  SIM_ETF_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      if (pid === etfId) { count++; break; }
+    }
+  });
+  return count;
+}
+
+// ============================================================
+// 9. ETF总览渲染
+// ============================================================
+function renderEtfOverview() {
+  var totalAum = getEtfTotalAum();
+  var dailyFee = totalAum * (EXCHANGE.etfMgmtFee / 100 / 365);
+  var totalFee = EXCHANGE.totalEtfMgmtFee;
+
+  document.getElementById('etfAum').textContent = '¥' + totalAum.toFixed(0);
+  document.getElementById('etfDailyFee').textContent = '¥' + dailyFee.toFixed(2);
+  document.getElementById('etfTotalFee').textContent = '¥' + totalFee.toFixed(2);
+  document.getElementById('etfProductCount').textContent = ETF_PRODUCTS.length;
+
+  // ETF产品概览表
+  var tbody = document.getElementById('etfProductOverviewBody');
+  tbody.innerHTML = '';
+  ETF_PRODUCTS.forEach(function(ep) {
+    var totalShares = getEtfTotalShares(ep.id);
+    var aum = totalShares * ep.nav;
+    var clientCount = getEtfClientCount(ep.id);
+    var mgmtFee = aum * (EXCHANGE.etfMgmtFee / 100 / 365);
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><strong>' + ep.name + '</strong></td>' +
+      '<td><span class="tag-lev l' + ep.lev + '">' + ep.lev + 'x</span></td>' +
+      '<td class="text-right mono">' + ep.nav.toFixed(4) + '</td>' +
+      '<td class="text-right mono">¥' + aum.toFixed(0) + '</td>' +
+      '<td class="text-right mono">' + totalShares + '</td>' +
+      '<td class="text-right mono">' + clientCount + '</td>' +
+      '<td class="text-right mono green">¥' + mgmtFee.toFixed(2) + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// ============================================================
+// 10. ETF产品渲染
+// ============================================================
+function renderEtfProducts() {
+  var grid = document.getElementById('etfProductsGrid');
+  grid.innerHTML = '';
+  ETF_PRODUCTS.forEach(function(ep) {
+    var underlying = UNDERLYINGS.find(function(u) { return u.id === ep.underlyingId; });
+    var price = underlying ? prices[underlying.id].price : 0;
+    var totalShares = getEtfTotalShares(ep.id);
+    var aum = totalShares * ep.nav;
+    var clientCount = getEtfClientCount(ep.id);
+    var mgmtFee = aum * (EXCHANGE.etfMgmtFee / 100 / 365);
+    var usage = ep.poolSize > 0 ? aum / ep.poolSize : 0;
+    var barClass = usage > 0.8 ? 'critical' : usage > 0.6 ? 'danger' : usage > 0.4 ? 'warn' : 'safe';
+
+    var card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML =
+      '<h5>' + ep.name + ' <span style="font-size:11px;color:var(--text-muted);">(' + (underlying ? underlying.id.toUpperCase() : '') + ')</span></h5>' +
+      '<div class="prod-row"><span>NAV</span><span class="val" style="color:var(--accent-cyan)">¥' + ep.nav.toFixed(4) + '</span></div>' +
+      '<div class="prod-row"><span>AUM</span><span class="val">¥' + aum.toFixed(0) + '</span></div>' +
+      '<div class="prod-row"><span>总份额</span><span class="val">' + totalShares + '</span></div>' +
+      '<div class="prod-row"><span>资金使用率</span><span class="val" style="color:' + (usage > 0.8 ? 'var(--accent-red)' : 'var(--accent-green)') + '">' + (usage * 100).toFixed(1) + '%</span></div>' +
+      '<div class="progress-bar"><div class="progress-fill ' + barClass + '" style="width:' + Math.min(usage * 100, 100) + '%"></div></div>' +
+      '<div class="prod-row"><span>持有客户</span><span class="val">' + clientCount + ' 位</span></div>' +
+      '<div class="prod-row"><span>管理费(年)</span><span class="val" style="color:var(--accent-green)">' + EXCHANGE.etfMgmtFee + '%</span></div>' +
+      '<div class="prod-row"><span>管理费/日</span><span class="val" style="color:var(--accent-green)">¥' + mgmtFee.toFixed(2) + '</span></div>';
+    grid.appendChild(card);
+  });
+}
+
+// ============================================================
+// 11. ETF客户渲染
+// ============================================================
+function renderEtfClients() {
+  var tbody = document.getElementById('etfClientTableBody');
+  tbody.innerHTML = '';
+
+  var winCount = 0, loseCount = 0;
+  var totalAum = 0;
+
+  SIM_ETF_CLIENTS.forEach(function(c) {
+    var totalMV = 0;
+    var totalInvest = 0;
+    var totalPnl = 0;
+    var posCount = 0;
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      var pos = c.positions[pid];
+      totalMV += pos.marketValue;
+      totalInvest += pos.shares * pos.entryNav;
+      totalPnl += pos.pnl;
+      posCount++;
+    }
+
+    if (totalPnl > 0) winCount++;
+    else if (totalPnl < 0) loseCount++;
+    totalAum += totalMV;
+
+    var ret = totalInvest > 0 ? (totalPnl / totalInvest * 100) : 0;
+    var retClass = ret >= 0 ? 'up' : 'down';
+
+    var tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.onclick = function() { showEtfClientDetail(c.id); };
+    tr.innerHTML =
+      '<td><strong>' + c.name + '</strong><br><span style="font-size:11px;color:var(--text-muted)">' + c.id + '</span></td>' +
+      '<td>' + posCount + '</td>' +
+      '<td class="text-right mono">¥' + totalMV.toFixed(0) + '</td>' +
+      '<td class="text-right mono">¥' + totalInvest.toFixed(0) + '</td>' +
+      '<td class="text-right mono ' + retClass + '">' + (totalPnl >= 0 ? '+' : '') + '¥' + totalPnl.toFixed(0) + '</td>' +
+      '<td class="text-right mono ' + retClass + '">' + (ret >= 0 ? '+' : '') + ret.toFixed(2) + '%</td>';
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('etfClientCount').textContent = SIM_ETF_CLIENTS.length;
+  document.getElementById('etfWinCount').textContent = winCount;
+  document.getElementById('etfLoseCount').textContent = loseCount;
+  document.getElementById('etfClientAum').textContent = '¥' + totalAum.toFixed(0);
+}
+
+// ============================================================
+// 12. ETF客户详情弹窗
+// ============================================================
+function showEtfClientDetail(clientId) {
+  var c = SIM_ETF_CLIENTS.find(function(cl) { return cl.id === clientId; });
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = c.name + ' - ETF持仓详情 (' + c.id + ')';
+  var body = document.getElementById('modalBody');
+  var html = '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">初始资金: <strong style="color:var(--text-primary);font-family:var(--font-mono);">¥' + c.capital.toFixed(0) + '</strong></p>';
+  html += '<table class="data-table"><thead><tr><th>ETF产品</th><th class="text-right">份额</th><th class="text-right">入场NAV</th><th class="text-right">当前市值</th><th class="text-right">投入</th><th class="text-right">浮动盈亏</th></tr></thead><tbody>';
+  for (var pid in c.positions) {
+    if (!c.positions.hasOwnProperty(pid)) continue;
+    var pos = c.positions[pid];
+    var pnlClass = pos.pnl >= 0 ? 'up' : 'down';
+    var ep = ETF_PRODUCTS.find(function(ep) { return ep.id === pid; });
+    html += '<tr>' +
+      '<td>' + (ep ? ep.name : pid) + '</td>' +
+      '<td class="text-right mono">' + pos.shares + '</td>' +
+      '<td class="text-right mono">¥' + pos.entryNav.toFixed(4) + '</td>' +
+      '<td class="text-right mono">¥' + pos.marketValue.toFixed(0) + '</td>' +
+      '<td class="text-right mono">¥' + (pos.shares * pos.entryNav).toFixed(0) + '</td>' +
+      '<td class="text-right mono ' + pnlClass + '">' + (pos.pnl >= 0 ? '+' : '') + '¥' + pos.pnl.toFixed(0) + '</td>' +
+    '</tr>';
+  }
+  html += '</tbody></table>';
+  body.innerHTML = html;
+   document.getElementById('clientModal').classList.add('show');
+ }
+
+// ============================================================
+// 13. 配资业务辅助函数
+// ============================================================
+function getMarginTotalExposure() {
+  var total = 0;
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      total += c.positions[pid].leverageAmount;
+    }
+  });
+  return total;
+}
+
+function getMarginTotalAum() {
+  var total = 0;
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      total += c.positions[pid].marketValue;
+    }
+  });
+  return total;
+}
+
+function getMarginProductUsed(productId, lev) {
+  var used = 0;
+  var prodId = productId + '_' + lev + 'x';
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      var pos = c.positions[pid];
+      var posProdId = pos.underlyingId + '_' + pos.leverage + 'x';
+      if (posProdId === prodId) used += pos.leverageAmount;
+    }
+  });
+  return used;
+}
+
+function getMarginProductClientCount(productId, lev) {
+  var count = 0;
+  var prodId = productId + '_' + lev + 'x';
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      var pos = c.positions[pid];
+      var posProdId = pos.underlyingId + '_' + pos.leverage + 'x';
+      if (posProdId === prodId) { count++; break; }
+    }
+  });
+  return count;
+}
+
+function getMarginClientExposure(clientId) {
+  var c = SIM_MARGIN_CLIENTS.find(function(cl) { return cl.id === clientId; });
+  if (!c) return 0;
+  var exp = 0;
+  for (var pid in c.positions) {
+    if (!c.positions.hasOwnProperty(pid)) continue;
+    exp += c.positions[pid].leverageAmount;
+  }
+  return exp;
+}
+
+// ============================================================
+// 14. 配资总览渲染
+// ============================================================
+function renderMarginOverview() {
+  var totalExposure = getMarginTotalExposure();
+  var totalAUM = getMarginTotalAum();
+  var overallLev = EXCHANGE.equity > 0 ? totalExposure / EXCHANGE.equity : 0;
+  var dailyInt = EXCHANGE.totalDayMarginInterest || 0;
+
+  document.getElementById('mDashExposure').textContent = '¥' + totalExposure.toFixed(0);
+  document.getElementById('mDashInterest').textContent = '¥' + dailyInt.toFixed(2);
+  document.getElementById('mDashTotalInterest').textContent = '¥' + EXCHANGE.totalMarginInterest.toFixed(2);
+  document.getElementById('mDashBadDebt').textContent = '¥' + EXCHANGE.totalBadDebt.toFixed(0);
+  document.getElementById('mDashLeverage').textContent = overallLev.toFixed(2) + 'x';
+
+  // 产品概览表
+  var tbody = document.getElementById('mProductOverviewBody');
+  tbody.innerHTML = '';
+  MARGIN_PRODUCTS.forEach(function(p) {
+    var used = getMarginProductUsed(p.underlyingId, p.lev);
+    var usage = p.poolSize > 0 ? used / p.poolSize : 0;
+    var levRate = p.lev === 2 ?
+      (EXCHANGE.marginRates.base + EXCHANGE.marginRates.spread2x) :
+      (EXCHANGE.marginRates.base + EXCHANGE.marginRates.spread3x);
+    var dailyInt2 = used * (levRate / 100 / 365);
+
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><strong>' + p.name + '</strong></td>' +
+      '<td><span class="tag-lev l' + p.lev + '">' + p.lev + 'x</span></td>' +
+      '<td class="text-right mono">¥' + p.poolSize.toFixed(0) + '</td>' +
+      '<td class="text-right mono">¥' + used.toFixed(0) + '</td>' +
+      '<td class="text-right mono" style="color:' + (usage > 0.8 ? 'var(--accent-red)' : usage > 0.5 ? 'var(--accent-yellow)' : 'var(--accent-green)') + '">' + (usage * 100).toFixed(1) + '%</td>' +
+      '<td class="text-right mono" style="color:var(--accent-cyan)">' + levRate.toFixed(1) + '%</td>' +
+      '<td class="text-right mono green">¥' + dailyInt2.toFixed(2) + '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+// ============================================================
+// 15. 配资产品渲染
+// ============================================================
+function renderMarginProducts() {
+  var grid = document.getElementById('mProductsGrid');
+  grid.innerHTML = '';
+  MARGIN_PRODUCTS.forEach(function(p) {
+    var underlying = UNDERLYINGS.find(function(u) { return u.id === p.underlyingId; });
+    var price = underlying ? prices[underlying.id].price : 0;
+    var used = getMarginProductUsed(p.underlyingId, p.lev);
+    var clientCount = getMarginProductClientCount(p.underlyingId, p.lev);
+    var usage = p.poolSize > 0 ? used / p.poolSize : 0;
+    var levRate = p.lev === 2 ?
+      (EXCHANGE.marginRates.base + EXCHANGE.marginRates.spread2x) :
+      (EXCHANGE.marginRates.base + EXCHANGE.marginRates.spread3x);
+    var dailyInt = used * (levRate / 100 / 365);
+    var barClass = usage > 0.8 ? 'critical' : usage > 0.6 ? 'danger' : usage > 0.4 ? 'warn' : 'safe';
+
+    var card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML =
+      '<h5>' + p.name + ' <span style="font-size:11px;color:var(--text-muted);">(' + (underlying ? underlying.id.toUpperCase() : '') + ')</span></h5>' +
+      '<div class="prod-row"><span>资金池总额</span><span class="val">¥' + (p.poolSize / 10000).toFixed(0) + '万</span></div>' +
+      '<div class="prod-row"><span>已使用配资</span><span class="val">¥' + (used / 10000).toFixed(0) + '万</span></div>' +
+      '<div class="prod-row"><span>资金使用率</span><span class="val" style="color:' + (usage > 0.8 ? 'var(--accent-red)' : 'var(--accent-green)') + '">' + (usage * 100).toFixed(1) + '%</span></div>' +
+      '<div class="progress-bar"><div class="progress-fill ' + barClass + '" style="width:' + Math.min(usage * 100, 100) + '%"></div></div>' +
+      '<div class="prod-row"><span>客户数量</span><span class="val">' + clientCount + ' 位</span></div>' +
+      '<div class="prod-row"><span>配资利率</span><span class="val" style="color:var(--accent-cyan)">' + levRate.toFixed(1) + '%/年</span></div>' +
+      '<div class="prod-row"><span>日利息收入</span><span class="val" style="color:var(--accent-green)">¥' + dailyInt.toFixed(2) + '</span></div>';
+    grid.appendChild(card);
+  });
+}
+
+// ============================================================
+// 16. 配资客户渲染
+// ============================================================
+function renderMarginClients() {
+  var tbody = document.getElementById('mClientTableBody');
+  tbody.innerHTML = '';
+  var winCount = 0, loseCount = 0, alertCount = 0;
+
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    var totalAsset = c.capital;
+    var totalExposure = 0;
+    var totalPnl = 0;
+    var minMargin = 1;
+
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      var pos = c.positions[pid];
+      totalAsset += pos.marketValue - pos.capitalUsed;
+      totalExposure += pos.leverageAmount;
+      totalPnl += pos.pnl;
+      if (pos.marginRatio < minMargin) minMargin = pos.marginRatio;
+    }
+
+    if (totalPnl > 0) winCount++;
+    else if (totalPnl < 0) loseCount++;
+
+    var marginRatio = totalExposure > 0 ? (c.capital + totalPnl) / (c.capital + totalExposure) : 1;
+    var marginPct = marginRatio * 100;
+    if (marginRatio < 0.7) alertCount++;
+
+    var riskClass = 'risk-low';
+    var riskLabel = '安全';
+    if (marginRatio < 0) { riskClass = 'risk-danger'; riskLabel = '&#128561; 穿仓'; }
+    else if (marginRatio < 0.3) { riskClass = 'risk-danger'; riskLabel = '&#9888; 危险'; }
+    else if (marginRatio < 0.5) { riskClass = 'risk-high'; riskLabel = '&#9888; 高风险'; }
+    else if (marginRatio < 0.7) { riskClass = 'risk-mid'; riskLabel = '&#9888; 关注'; }
+
+    var tr = document.createElement('tr');
+    tr.style.cursor = 'pointer';
+    tr.onclick = function() { showMarginClientDetail(c.id); };
+    tr.innerHTML =
+      '<td><strong>' + c.name + '</strong><br><span style="font-size:11px;color:var(--text-muted)">' + c.id + '</span></td>' +
+      '<td class="mono">¥' + (c.capital + totalPnl).toFixed(0) + '</td>' +
+      '<td class="mono">¥' + c.capital.toFixed(0) + '</td>' +
+      '<td class="mono" style="color:var(--accent-cyan)">¥' + totalExposure.toFixed(0) + '</td>' +
+      '<td class="mono">¥' + totalAsset.toFixed(0) + '</td>' +
+      '<td class="mono ' + (totalPnl >= 0 ? 'up' : 'down') + '">' + (totalPnl >= 0 ? '+' : '') + '¥' + totalPnl.toFixed(0) + '</td>' +
+      '<td class="mono" style="color:' + (marginRatio > 0.7 ? 'var(--accent-green)' : marginRatio > 0.5 ? 'var(--accent-yellow)' : 'var(--accent-red)') + '">' + marginPct.toFixed(1) + '%</td>' +
+      '<td><span class="risk-tag ' + riskClass + '">' + riskLabel + '</span></td>';
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('mClientCount').textContent = SIM_MARGIN_CLIENTS.length;
+  document.getElementById('mWinCount').textContent = winCount;
+  document.getElementById('mLoseCount').textContent = loseCount;
+  document.getElementById('mAlertClientCount').textContent = alertCount;
+}
+
+// ============================================================
+// 17. 配资客户详情弹窗
+// ============================================================
+function showMarginClientDetail(clientId) {
+  var c = SIM_MARGIN_CLIENTS.find(function(cl) { return cl.id === clientId; });
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = c.name + ' - 配资持仓详情 (' + c.id + ')';
+  var body = document.getElementById('modalBody');
+  var html = '<p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;">自有资金: <strong style="color:var(--text-primary);font-family:var(--font-mono);">¥' + c.capital.toFixed(0) + '</strong></p>';
+  html += '<table class="data-table"><thead><tr><th>产品</th><th>杠杆</th><th class="text-right">份额</th><th class="text-right">持仓市值</th><th class="text-right">自有投入</th><th class="text-right">配资金额</th><th class="text-right">浮动盈亏</th><th class="text-right">保证金</th></tr></thead><tbody>';
+  for (var pid in c.positions) {
+    if (!c.positions.hasOwnProperty(pid)) continue;
+    var pos = c.positions[pid];
+    var pnlClass = pos.pnl >= 0 ? 'up' : 'down';
+    var marginPct2 = (pos.marginRatio * 100).toFixed(1);
+    var marginColor = pos.marginRatio > 0.7 ? 'var(--accent-green)' : pos.marginRatio > 0.5 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+    html += '<tr>' +
+      '<td>' + pos.underlyingId.toUpperCase() + '</td>' +
+      '<td>' + pos.leverage + 'x</td>' +
+      '<td class="text-right mono">' + pos.shares + '</td>' +
+      '<td class="text-right mono">¥' + pos.marketValue.toFixed(0) + '</td>' +
+      '<td class="text-right mono">¥' + pos.capitalUsed.toFixed(0) + '</td>' +
+      '<td class="text-right mono" style="color:var(--accent-cyan)">¥' + pos.leverageAmount.toFixed(0) + '</td>' +
+      '<td class="text-right mono ' + pnlClass + '">' + (pos.pnl >= 0 ? '+' : '') + '¥' + pos.pnl.toFixed(0) + '</td>' +
+      '<td class="text-right mono" style="color:' + marginColor + '">' + marginPct2 + '%</td>' +
+    '</tr>';
+  }
+  html += '</tbody></table>';
+  body.innerHTML = html;
+  document.getElementById('clientModal').classList.add('show');
+}
+
+// ============================================================
+// 18. 配资风控渲染
+// ============================================================
+function renderMarginRisk() {
+  // 整体保证金充足率
+  var totalClientEquity = 0, totalMarketVal = 0, totalExposure = 0;
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    var pnl = 0;
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      var pos = c.positions[pid];
+      pnl += pos.pnl;
+      totalExposure += pos.leverageAmount;
+      totalMarketVal += pos.marketValue;
+    }
+    totalClientEquity += c.capital + pnl;
+  });
+
+  var marginRatio = totalMarketVal > 0 ? totalClientEquity / totalMarketVal : 1;
+  var marginPct = Math.min(marginRatio * 100, 100);
+  document.getElementById('mRiskMarginRatio').textContent = marginPct.toFixed(1) + '%';
+  document.getElementById('mRiskMarginRatio').className = 'gauge-value ' + (marginPct > 70 ? 'level-safe' : marginPct > 50 ? 'level-warn' : marginPct > 30 ? 'level-danger' : 'level-critical');
+  var marginBar = document.getElementById('mRiskMarginBar');
+  marginBar.style.width = marginPct + '%';
+  marginBar.style.background = marginPct > 70 ? 'var(--accent-green)' : marginPct > 50 ? 'var(--accent-yellow)' : marginPct > 30 ? 'var(--accent-orange)' : 'var(--accent-pink)';
+
+  // 集中度
+  var maxProductVal = 0, totalVal = 1;
+  var prodMap = {};
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      prodMap[pid] = (prodMap[pid] || 0) + c.positions[pid].marketValue;
+      totalVal += c.positions[pid].marketValue;
+    }
+  });
+  for (var k in prodMap) {
+    if (prodMap.hasOwnProperty(k) && prodMap[k] > maxProductVal) maxProductVal = prodMap[k];
+  }
+  var concPct = totalVal > 0 ? (maxProductVal / totalVal * 100) : 0;
+  document.getElementById('mRiskConcentration').textContent = concPct.toFixed(1) + '%';
+  document.getElementById('mRiskConcentration').className = 'gauge-value ' + (concPct < 30 ? 'level-safe' : concPct < 50 ? 'level-warn' : 'level-danger');
+  var concBar = document.getElementById('mRiskConcBar');
+  concBar.style.width = Math.min(concPct, 100) + '%';
+  concBar.style.background = concPct < 30 ? 'var(--accent-green)' : concPct < 50 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+
+  // 整体杠杆率
+  var overallLev = EXCHANGE.equity > 0 ? totalExposure / EXCHANGE.equity : 0;
+  document.getElementById('mRiskOverallLev').textContent = overallLev.toFixed(2) + 'x';
+  document.getElementById('mRiskOverallLev').className = 'gauge-value ' + (overallLev < 3 ? 'level-safe' : overallLev < 5 ? 'level-warn' : 'level-danger');
+  var levBar = document.getElementById('mRiskLevBar');
+  var levPct = Math.min(overallLev / 8 * 100, 100);
+  levBar.style.width = levPct + '%';
+  levBar.style.background = overallLev < 3 ? 'var(--accent-green)' : overallLev < 5 ? 'var(--accent-yellow)' : 'var(--accent-red)';
+
+  // 生成警报
+  generateMarginAlerts(totalMarketVal, totalClientEquity, marginRatio);
+}
+
+function generateMarginAlerts(totalMV, totalEQ, marginRatio) {
+  var alerts = [];
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    var pnl = 0, hasPos = false;
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      pnl += c.positions[pid].pnl;
+      hasPos = true;
+    }
+    if (!hasPos) return;
+    var clientEquity = c.capital + pnl;
+    var exp = getMarginClientExposure(c.id);
+    var margin = (c.capital + exp) > 0 ? clientEquity / (c.capital + exp) : 0;
+
+    if (clientEquity < 0) {
+      alerts.push({ level: 'critical', icon: '&#128561;', text: c.name + ' 发生穿仓！客户权益为负，损失计入坏账' });
+    } else if (margin < 0.3) {
+      alerts.push({ level: 'danger', icon: '&#128680;', text: c.name + ' 触发强平线！保证金比例 ' + (margin * 100).toFixed(1) + '%，需立即处理' });
+    } else if (margin < 0.5) {
+      alerts.push({ level: 'warning', icon: '&#9888;&#65039;', text: c.name + ' 保证金不足，当前 ' + (margin * 100).toFixed(1) + '%，建议追加保证金' });
+    } else if (margin < 0.7) {
+      alerts.push({ level: 'info', icon: '&#21394;&#65039;', text: c.name + ' 保证金比例 ' + (margin * 100).toFixed(1) + '%，已进入关注名单' });
+    }
+  });
+
+  if (totalMV > 0 && marginRatio < 0.5) {
+    alerts.push({ level: 'danger', icon: '&#128680;', text: '整体保证金充足率过低，建议收紧配资额度' });
+  }
+  if (EXCHANGE.totalBadDebt > 0) {
+    alerts.push({ level: 'critical', icon: '&#128561;', text: '累计穿仓损失 ¥' + EXCHANGE.totalBadDebt.toFixed(0) + '，需加强风控' });
+  }
+
+  document.getElementById('mAlertCount').textContent = alerts.length + ' 条警报';
+  var container = document.getElementById('mAlertsList');
+  if (alerts.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px;">&#10004;&#65039; 一切正常，暂无警报</div>';
+    return;
+  }
+  container.innerHTML = '';
+  alerts.forEach(function(a) {
+    var div = document.createElement('div');
+    var cls = a.level === 'critical' ? 'critical' : a.level === 'danger' ? 'danger' : a.level === 'warning' ? 'warning' : 'info';
+    div.className = 'alert-item ' + cls;
+    div.innerHTML = '<span class="alert-icon">' + a.icon + '</span><span class="alert-text">' + a.text + '</span><span class="alert-time">第' + EXCHANGE.day + '天</span>';
+    container.appendChild(div);
+  });
+}
+
+// ============================================================
+// 19. 配资压力测试
+// ============================================================
+function runMStressTest(pctDrop) {
+  var idx = [-5, -10, -15, -20].indexOf(pctDrop);
+  if (idx < 0) return;
+  var el = document.getElementById('mStress' + (idx + 1));
+
+  var totalClientEquity = 0, totalMarketVal = 0;
+  SIM_MARGIN_CLIENTS.forEach(function(c) {
+    var cEquity = c.capital;
+    for (var pid in c.positions) {
+      if (!c.positions.hasOwnProperty(pid)) continue;
+      var pos = c.positions[pid];
+      var drop = pctDrop / 100 * pos.leverage;
+      var newMV = pos.marketValue * (1 + drop);
+      cEquity += (newMV - pos.totalCost);
+      totalMarketVal += newMV;
+    }
+    totalClientEquity += cEquity;
+  });
+
+  var newMargin = totalMarketVal > 0 ? totalClientEquity / totalMarketVal : 0;
+  var marginPct2 = newMargin * 100;
+  var color = 'var(--accent-green)';
+  if (marginPct2 < 0) color = 'var(--accent-pink)';
+  else if (marginPct2 < 30) color = 'var(--accent-red)';
+  else if (marginPct2 < 50) color = 'var(--accent-orange)';
+  else if (marginPct2 < 70) color = 'var(--accent-yellow)';
+  el.style.color = color;
+  el.textContent = marginPct2.toFixed(1) + '%';
+  showToast('压力测试: 标的跌' + Math.abs(pctDrop) + '%，保证金充足率降至 ' + marginPct2.toFixed(1) + '%', 'info');
+}
+
+// ============================================================
+// 20. 配资利率设置
+// ============================================================
+function updateMRateSettings() {
+  EXCHANGE.marginRates.base = parseFloat(document.getElementById('mBaseRateSlider').value);
+  EXCHANGE.marginRates.spread2x = parseFloat(document.getElementById('mSpread2xSlider').value);
+  EXCHANGE.marginRates.spread3x = parseFloat(document.getElementById('mSpread3xSlider').value);
+  document.getElementById('mBaseRateDisplay').textContent = EXCHANGE.marginRates.base.toFixed(1) + '%';
+  document.getElementById('mSpread2xDisplay').textContent = '+' + EXCHANGE.marginRates.spread2x.toFixed(1) + '%';
+  document.getElementById('mSpread3xDisplay').textContent = '+' + EXCHANGE.marginRates.spread3x.toFixed(1) + '%';
+  renderAll();
+  showToast('配资利率已更新', 'info');
+}
+
+// ============================================================
+// 21. UI控制
+// ============================================================
+function switchBizLine(line) {
+  // 切换业务线按钮高亮
+  document.querySelectorAll('.biz-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('.biz-btn[data-biz="' + line + '"]').classList.add('active');
+
+  // 切换业务线内容
+  document.querySelectorAll('.biz-content').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('biz-' + line).classList.add('active');
+
+  // 切换Tab栏
+  document.getElementById('tabBarEtf').style.display = (line === 'etf') ? 'flex' : 'none';
+  document.getElementById('tabBarMargin').style.display = (line === 'margin') ? 'flex' : 'none';
+}
+
+function switchSubTab(biz, sub) {
+  // 切换对应业务线的子tab高亮
+  var tabBarId = (biz === 'etf') ? 'tabBarEtf' : 'tabBarMargin';
+  document.querySelectorAll('#' + tabBarId + ' .tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelector('#' + tabBarId + ' .tab-btn[data-subtab="' + sub + '"]').classList.add('active');
+
+  // 切换子tab内容
+  var bizContent = document.getElementById('biz-' + biz);
+  bizContent.querySelectorAll('.sub-tab-content').forEach(function(s) { s.classList.remove('active'); });
+  bizContent.querySelector('#sub-' + sub).classList.add('active');
+}
+
+function closeClientModal() {
+  document.getElementById('clientModal').classList.remove('show');
+}
+
+// ============================================================
+// 22. 自动推进
+// ============================================================
+var adminAutoTimer = null;
+function startAdminAuto() {
+  var btn = document.getElementById('adminAutoBtn');
+  if (adminAutoTimer) {
+    clearInterval(adminAutoTimer);
+    adminAutoTimer = null;
+    btn.textContent = '&#9654; 自动';
+    return;
+  }
+  btn.textContent = '&#9209; 停止';
+  adminAutoTimer = setInterval(function() {
+    advanceAdminDay();
+    if (EXCHANGE.day >= 500) {
+      clearInterval(adminAutoTimer);
+      adminAutoTimer = null;
+      document.getElementById('adminAutoBtn').textContent = '&#9654; 自动';
+      showToast('模拟达到500天上限', 'info');
+    }
+  }, 1000);
+}
+
+// ============================================================
+// 23. Toast
+// ============================================================
+function showToast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type + ' show';
+  setTimeout(function() { el.classList.remove('show'); }, 3000);
+}
+
+// ============================================================
+// 24. 初始渲染
+// ============================================================
+renderAll();
+</script>
+</body>
+</html>
