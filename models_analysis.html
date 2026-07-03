@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>杠杆ETF vs 配资 — 两种模式差异与业务规则梳理</title>
+<title>杠杆代币 vs 配资 — 两种模式差异与业务规则梳理</title>
 <style>
 :root {
   --bg: #f8f9fa; --card: #fff; --border: #dee2e6;
@@ -125,7 +125,7 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 <body>
 
 <div class="doc-header">
-  <h1><span>杠杆ETF vs 配资</span> — 两种模式差异与业务规则梳理</h1>
+  <h1><span>杠杆代币 vs 配资</span> — 两种模式差异与业务规则梳理</h1>
   <div class="meta">分析文档 v1.0 | 2026-07-03</div>
   <div class="badge">第1步：梳理 → 第2步：校正代码 → 第3步：完善模型</div>
 </div>
@@ -138,31 +138,31 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 <h2>一、核心观点：同一份风险，两种产品包装</h2>
 
 <p>
-从<strong>交易所</strong>的视角来看，<span class="tag tag-etf">杠杆ETF</span> 和 <span class="tag tag-margin">配资</span>
+从<strong>交易所</strong>的视角来看，<span class="tag tag-etf">杠杆代币</span> 和 <span class="tag tag-margin">配资</span>
 本质上是<strong>同一份杠杆资金业务</strong>，只是包装成了两种不同体验的产品卖给客户。
 </p>
 
 <div class="callout green">
   <strong>核心洞察：</strong> 交易所做的是"钱生钱"的生意——拿出自有资金，通过不同渠道提供给客户赚取杠杆差价。
-  无论是通过收益互换（ETF）还是直接借贷（配资），<strong>你的风险敞口本质上是一样的</strong>。
+  无论是通过收益互换（代币）还是直接借贷（配资），<strong>你的风险敞口本质上是一样的</strong>。
   唯一的区别是：客户感受到的交易体验不同。
 </div>
 
 <!-- ============================================================ -->
-<!-- P2: 模式一  杠杆ETF -->
+<!-- P2: 模式一  杠杆代币 -->
 <!-- ============================================================ -->
-<h2>二、模式一：杠杆ETF（标准金融产品）</h2>
+<h2>二、模式一：杠杆代币（标准金融产品）</h2>
 
 <h3>2.1 本质定义</h3>
 <p>
-杠杆ETF是在证券交易所公开上市交易的<strong>标准基金产品</strong>。投资者像买卖普通股票一样买卖ETF份额。
+杠杆代币是在证券交易所公开上市交易的<strong>标准基金产品</strong>。投资者像买卖普通股票一样买卖代币份额。
 杠杆的实现并非通过投资者直接借贷，而是由基金发行商通过<strong>金融衍生品</strong>（互换合约、期货）来达成。
 </p>
 
 <div class="flow">
   <span class="flow-box blue">投资者</span>
   <span class="flow-arrow">→ 买入份额 →</span>
-  <span class="flow-box green">杠杆ETF基金</span>
+  <span class="flow-box green">杠杆代币基金</span>
   <span class="flow-arrow">→ 通过互换/期货 →</span>
   <span class="flow-box purple">标的资产 × 杠杆</span>
 </div>
@@ -171,14 +171,14 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 
 <div class="card">
   <table class="comparison-table">
-    <tr><th colspan="2">杠杆ETF — 业务规则明细</th></tr>
+    <tr><th colspan="2">杠杆代币 — 业务规则明细</th></tr>
     <tr><td class="dim">杠杆实现方式</td><td>基金公司与做市商签订<strong>总收益互换(Total Return Swap)</strong>，支付标的收益的倍数，获得指数敞口</td></tr>
     <tr><td class="dim">每日重置含义</td><td>每个交易日收盘后，基金重新调整互换合约的名义本金，使次日杠杆比例恢复目标值</td></tr>
     <tr><td class="dim">投资者与杠杆的关系</td><td>投资者购买的是<strong>基金份额</strong>，基金价格已内嵌杠杆效果，投资者无需与任何人发生借贷关系</td></tr>
-    <tr><td class="dim">价格计算</td><td>ETF日收益率 = 标的日收益率 × 杠杆倍数（<code>R_ETF = R_underlying × L</code>）<br>累积收益 = <code>Π(1 + R_i × L) - 1</code></td></tr>
+    <tr><td class="dim">价格计算</td><td>代币日收益率 = 标的日收益率 × 杠杆倍数（<code>R_ETF = R_underlying × L</code>）<br>累积收益 = <code>Π(1 + R_i × L) - 1</code></td></tr>
     <tr><td class="dim">波动损耗</td><td>由于每日重置，震荡市场下长期收益 < 标的收益 × 杠杆。这是复利效应，不是资金损耗</td></tr>
-    <tr><td class="dim">投资者风险</td><td><strong>仅限投入的本金</strong>。ETF价格跌到0不会产生负债，投资者最多损失全部投资</td></tr>
-    <tr><td class="dim">保证金/强平</td><td><strong>无</strong>。交易ETF不需要维持保证金，不存在强平机制</td></tr>
+    <tr><td class="dim">投资者风险</td><td><strong>仅限投入的本金</strong>。代币价格跌到0不会产生负债，投资者最多损失全部投资</td></tr>
+    <tr><td class="dim">保证金/强平</td><td><strong>无</strong>。交易代币不需要维持保证金，不存在强平机制</td></tr>
     <tr><td class="dim">收入模式</td><td>基金公司收取<strong>管理费</strong>（年化约0.75%-1.5%），从基金净值中每日计提</td></tr>
     <tr><td class="dim">交易方式</td><td>公开市场二级交易，T+1交割（A股），以份额为单位</td></tr>
     <tr><td class="dim">典型产品</td><td>ProShares UltraPro QQQ (TQQQ), Direxion Daily SOXL 等</td></tr>
@@ -188,7 +188,7 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 
 <h3>2.3 数学本质</h3>
 
-<p>杠杆ETF是一个 <strong>独立的价格序列</strong>，由标的每日收益率经杠杆放大后复利生成：</p>
+<p>杠杆代币是一个 <strong>独立的价格序列</strong>，由标的每日收益率经杠杆放大后复利生成：</p>
 
 <div class="formula">
   P_ETF(t) = P_ETF(t-1) × [1 + L × R_underlying(t)]<br><br>
@@ -196,7 +196,7 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
   R_underlying(t) = 标的在第 t 天的日收益率
 </div>
 
-<p>这里 <strong>没有借贷</strong>，没有"配资金额"的概念，没有利息。ETF的价格纯粹由数学公式驱动。</p>
+<p>这里 <strong>没有借贷</strong>，没有"配资金额"的概念，没有利息。代币的价格纯粹由数学公式驱动。</p>
 
 <!-- ============================================================ -->
 <!-- P3: 模式二  配资 -->
@@ -261,18 +261,18 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 <div class="card" style="overflow-x:auto;">
   <table class="comparison-table" style="min-width:700px;">
     <thead>
-      <tr><th>维度</th><th><span class="model-tag a">杠杆ETF</span></th><th><span class="model-tag b">配资</span></th></tr>
+      <tr><th>维度</th><th><span class="model-tag a">杠杆代币</span></th><th><span class="model-tag b">配资</span></th></tr>
     </thead>
     <tbody>
       <tr><td class="dim">产品性质</td><td>标准化基金产品</td><td>场外借贷合同</td></tr>
       <tr><td class="dim">杠杆实现</td><td>金融衍生品（互换/期货）</td><td>直接资金借贷</td></tr>
       <tr><td class="dim">交易场所</td><td>公开市场（交易所）</td><td>场外（配资公司账户）</td></tr>
       <tr><td class="dim">每日重置含义</td><td>重置衍生品头寸，维持目标杠杆</td><td>重算配资上限，调整风险敞口</td></tr>
-      <tr><td class="dim">投资者买入</td><td>ETF份额，按市价成交</td><td>不是"买入"，而是借入资金</td></tr>
+      <tr><td class="dim">投资者买入</td><td>代币份额，按市价成交</td><td>不是"买入"，而是借入资金</td></tr>
       <tr><td class="dim">借贷关系</td><td>无（投资者↔基金无借贷）</td><td>有（客户↔配资公司有借贷）</td></tr>
       <tr><td class="dim">利息</td><td>无（只有管理费）</td><td>有（按日/月计息）</td></tr>
       <tr><td class="dim">保证金制度</td><td>无</td><td>初始≥100%，维持≥70%，强平≤30%</td></tr>
-      <tr><td class="dim">强平机制</td><td>无（ETF本身不会强制卖出）</td><td>有（配资公司有权强平）</td></tr>
+      <tr><td class="dim">强平机制</td><td>无（代币本身不会强制卖出）</td><td>有（配资公司有权强平）</td></tr>
       <tr><td class="dim">投资者最大损失</td><td>全部投入本金</td><td>全部本金+额外负债（穿仓）</td></tr>
       <tr><td class="dim">配资方风险</td><td><strong>无</strong>（做市商通过对冲规避）</td><td><strong>有穿仓风险</strong>（客户亏超保证金）</td></tr>
       <tr><td class="dim">波动损耗</td><td>有（因复利效应）</td><td>客户承担，配资方不受影响</td></tr>
@@ -290,10 +290,10 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 
 <div class="two-col">
   <div class="col-box col-a">
-    <h5 style="color:#1d4ed8;">产品A：杠杆ETF（收益互换）</h5>
+    <h5 style="color:#1d4ed8;">产品A：杠杆代币（收益互换）</h5>
     <ul>
-      <li><strong>客户体验：</strong>像买股票一样买ETF份额</li>
-      <li><strong>杠杆实现：</strong>ETF产品与交易所做收益互换</li>
+      <li><strong>客户体验：</strong>像买股票一样买代币份额</li>
+      <li><strong>杠杆实现：</strong>代币产品与交易所做收益互换</li>
       <li><strong>客户不需要：</strong>交保证金、管强平、付利息</li>
       <li><strong>交易所收入：</strong>管理费（0.8%年化）</li>
       <li><strong>交易所风控：</strong>每日重置互换名义本金</li>
@@ -317,16 +317,16 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
     两种产品中，交易所都是拿出资金为客户提供杠杆敞口。区别只是：
   </p>
   <p>
-    <strong>ETF产品</strong>多了一层"互换"结构——交易所和ETF产品之间有一个中间层，
-    客户的交易对手是ETF而非交易所直接。但这层结构<strong>没有消除交易所的底层风险</strong>：
-    如果市场大幅波动，ETF净值暴跌，互换合约能否履约依然是交易所需要承担的对手方风险。
+    <strong>代币产品</strong>多了一层"互换"结构——交易所和代币产品之间有一个中间层，
+    客户的交易对手是代币而非交易所直接。但这层结构<strong>没有消除交易所的底层风险</strong>：
+    如果市场大幅波动，代币净值暴跌，互换合约能否履约依然是交易所需要承担的对手方风险。
   </p>
   <p>
     <strong>配资产品</strong>则更直接——客户就是交易所的借款人，关系简单明了，
     但有额外的保证金监控和强平机制作为风控手段。
   </p>
   <p style="color:var(--accent-cyan);font-weight:600;margin-top:8px;">
-    💡 可以把ETF想象成"配资产品的标准化、证券化版本"——同样的底层杠杆，不同的包装形态。
+    💡 可以把代币想象成"配资产品的标准化、证券化版本"——同样的底层杠杆，不同的包装形态。
   </p>
 </div>
 
@@ -341,7 +341,7 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 </p>
 <ul>
   <li>标的每日收益率：<code>R = N(0, σ²)</code>，其中 σ 为日波动率</li>
-  <li>杠杆ETF每日涨跌幅：<code>R_ETF = R × L</code></li>
+  <li>杠杆代币每日涨跌幅：<code>R_ETF = R × L</code></li>
   <li>价格递推：<code>P(t) = P(t-1) × (1 + R_ETF)</code></li>
 </ul>
 
@@ -349,7 +349,7 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 
 <div class="two-col">
   <div class="col-box col-a">
-    <h5 style="color:#1d4ed8;">杠杆ETF (交易端现有)</h5>
+    <h5 style="color:#1d4ed8;">杠杆代币 (交易端现有)</h5>
     <ul>
       <li>✅ 买卖份额，按市价成交</li>
       <li>✅ 仓位管理（持仓、成本、盈亏）</li>
@@ -379,7 +379,7 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 
 <div class="card">
   <table class="comparison-table">
-    <tr><th>要素</th><th><span class="model-tag a">杠杆ETF</span></th><th><span class="model-tag b">配资</span></th></tr>
+    <tr><th>要素</th><th><span class="model-tag a">杠杆代币</span></th><th><span class="model-tag b">配资</span></th></tr>
     <tr>
       <td class="dim">初始参数</td>
       <td>标的波动率 σ，杠杆倍数 L，初始价格 P₀</td>
@@ -387,7 +387,7 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
     </tr>
     <tr>
       <td class="dim">每日更新</td>
-      <td>ETF价格=ETF价格×(1+L×R)</td>
+      <td>代币价格=代币价格×(1+L×R)</td>
       <td>①更新标的价格；②更新客户总市值；③计算保金比例；④计提利息；⑤触发风控</td>
     </tr>
     <tr>
@@ -413,28 +413,28 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 <!-- ============================================================ -->
 <h2>七、对照现有代码：需要调整的地方</h2>
 
-<h3>7.1 交易端（杠杆ETF）— 基本正确，小修即可</h3>
+<h3>7.1 交易端（杠杆代币）— 基本正确，小修即可</h3>
 
 <div class="callout green">
-  ✅ <strong>优点：</strong>交易端模拟的是标准的杠杆ETF交易行为——买卖份额、市场价格、无借贷无利息。模型正确。
+  ✅ <strong>优点：</strong>交易端模拟的是标准的杠杆代币交易行为——买卖份额、市场价格、无借贷无利息。模型正确。
 </div>
 
 <ul>
   <li><code>buy/sell</code> 逻辑是<span style="color:var(--green);font-weight:600;">正确的</span>，因为它处理的是份额交易</li>
   <li><code>每日重置</code> 的价格计算是 <span style="color:var(--green);font-weight:600;">正确的</span>，因为它用了 <code>etfReturn = leverage * underlyingReturn</code></li>
-  <li>小建议：在UI的"波动损耗"说明中，可以更明确地区分"杠杆ETF的波动损耗"和"配资的波动损耗"其实是同一个数学现象的两种表述</li>
+  <li>小建议：在UI的"波动损耗"说明中，可以更明确地区分"杠杆代币的波动损耗"和"配资的波动损耗"其实是同一个数学现象的两种表述</li>
 </ul>
 
 <h3>7.2 管理后台（配资）— 方向对但需修正两点</h3>
 
 <div class="callout warn">
-  ⚠️ <strong>需要注意：</strong>管理后台目前把杠杆ETF的机制和配资的机制混在一起，有两个问题需要明确。
+  ⚠️ <strong>需要注意：</strong>管理后台目前把杠杆代币的机制和配资的机制混在一起，有两个问题需要明确。
 </div>
 
-<p><strong>问题一：应将"杠杆ETF"和"配资产品"分离为两个独立视图</strong></p>
+<p><strong>问题一：应将"杠杆代币"和"配资产品"分离为两个独立视图</strong></p>
 <p>
 当前管理后台的"产品"Tab直接将杠杆倍数（2x、3x）映射为配资产品（茅台2倍、茅台3倍等）。
-但实际上，配资不是按"2倍茅台ETF"来设计的，而是按<strong>客户申请杠杆倍数</strong>来设计的。
+但实际上，配资不是按"2倍茅台代币"来设计的，而是按<strong>客户申请杠杆倍数</strong>来设计的。
 一个客户可以申请"我要2倍杠杆配资买茅台"，另一个客户可以申请"我要3倍杠杆配资买兆易"。
 </p>
 <p>更合理的配资产品设计应该是：</p>
@@ -442,7 +442,7 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
   <li>产品 = { 标的品种, 杠杆倍数, 资金池额度, 利率 }</li>
   <li>客户 = { 自有资金, 选择的配资产品, 持仓份额, 累计利息 }</li>
 </ul>
-<p>现有管理后台的 <code>PROD_TEMPLATES</code> 架构已经是这样设计的，不需要大改，<strong>但命名和展示上可以更精确地体现"配资产品"而非"杠杆ETF产品"</strong>。</p>
+<p>现有管理后台的 <code>PROD_TEMPLATES</code> 架构已经是这样设计的，不需要大改，<strong>但命名和展示上可以更精确地体现"配资产品"而非"杠杆代币产品"</strong>。</p>
 
 <p><strong>问题二：配资方的收入计算应增加累计利息和穿仓损失</strong></p>
 <p>当前系统计算了每日利息（<code>EXCHANGE.totalDayInterest</code>），但没有：</p>
@@ -456,11 +456,11 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 <div class="card">
   <table class="comparison-table">
     <tr><th>#</th><th>页面</th><th>调整内容</th><th>优先级</th></tr>
-    <tr><td>1</td><td>管理后台</td><td>将"配资产品"命名从"茅台2倍"改为"茅台—2倍杠杆配资"，明确区分于交易所的杠杆ETF</td><td>中</td></tr>
+    <tr><td>1</td><td>管理后台</td><td>将"配资产品"命名从"茅台2倍"改为"茅台—2倍杠杆配资"，明确区分于交易所的杠杆代币</td><td>中</td></tr>
     <tr><td>2</td><td>管理后台</td><td>在Dashboard或产品Tab中展示<strong>累计利息收入</strong></td><td>高</td></tr>
     <tr><td>3</td><td>管理后台</td><td>实现穿仓场景下的配资方损失计算</td><td>高</td></tr>
-    <tr><td>4</td><td>管理后台</td><td>"原理说明"Tab修改"杠杆ETF=配资"的说法，改为更准确的横向对比</td><td>高</td></tr>
-    <tr><td>5</td><td>交易端</td><td>完善波动损耗说明，明确指出这是杠杆ETF本身的特性</td><td>低</td></tr>
+    <tr><td>4</td><td>管理后台</td><td>"原理说明"Tab修改"杠杆代币=配资"的说法，改为更准确的横向对比</td><td>高</td></tr>
+    <tr><td>5</td><td>交易端</td><td>完善波动损耗说明，明确指出这是杠杆代币本身的特性</td><td>低</td></tr>
     <tr><td>6</td><td>两个页面</td><td>用一份独立的"模式对比"文档链接到两个页面中</td><td>低</td></tr>
   </table>
 </div>
@@ -473,12 +473,12 @@ code { font-family: 'Consolas','Courier New',monospace; font-size: 13px; backgro
 <div class="insight">
   <h4>核心结论</h4>
   <p>
-    <strong>杠杆ETF</strong> 和 <strong>配资</strong> 虽然使用相同的每日重置价格公式，<br>
+    <strong>杠杆代币</strong> 和 <strong>配资</strong> 虽然使用相同的每日重置价格公式，<br>
     但它们在<strong>法律本质、参与者关系、风控机制、盈利模式、风险承担</strong>五个维度上截然不同。
   </p>
   <p>
     我们现有的两个页面分别对应这两个模式，方向是正确的：<br>
-    <span style="color:#22c55e;font-weight:600;">交易端 → 杠杆ETF模式</span>（投资者角度）<br>
+    <span style="color:#22c55e;font-weight:600;">交易端 → 杠杆代币模式</span>（投资者角度）<br>
     <span style="color:#f97316;font-weight:600;">管理后台 → 配资模式</span>（交易所/资金方角度）
   </p>
   <p>
